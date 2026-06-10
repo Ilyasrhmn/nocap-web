@@ -20,7 +20,13 @@ Link.displayName = 'Link';
 
 export const usePage = () => ({
     props: {
-        auth: { user: null },
+        auth: { 
+            user: {
+                name: 'Ilyas Nur Rohman',
+                email: 'ilyas@nocap.com',
+                created_at: new Date().toISOString()
+            } 
+        },
         errors: {},
         flash: {}
     },
@@ -59,4 +65,13 @@ export const router = {
     put: (url: string) => { console.log('router.put', url); },
     delete: (url: string) => { console.log('router.delete', url); },
     visit: (url: string) => { if (typeof window !== 'undefined') window.location.href = url; },
+};
+
+export const Form = ({ children, className, onSubmit, ...props }: any) => {
+    const mockState = { processing: false, errors: {}, resetAndClearErrors: () => {} };
+    return (
+        <form className={className} onSubmit={(e) => { e.preventDefault(); if (onSubmit) onSubmit(e); }}>
+            {typeof children === 'function' ? children(mockState) : children}
+        </form>
+    );
 };

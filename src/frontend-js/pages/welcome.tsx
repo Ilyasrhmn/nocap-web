@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import NoCapLayout from '@/layouts/nocap-layout';
 import ScrollReveal from '@/components/scroll-reveal';
 import FlowingFaq from '@/components/flowing-faq';
@@ -174,28 +174,33 @@ export default function Welcome({
                         </section>
                     </ScrollReveal>
 
-                    {/* SPORT/CATEGORY RAIL */}
+                    {/* CURATED CATEGORIES */}
                     <ScrollReveal>
                         <section className="px-6 py-12 md:px-12 border-t border-hairline transition-colors duration-300">
-                            <div className="mb-6 flex items-center justify-between">
-                                <h2 className="text-[32px] font-medium uppercase leading-tight text-ink">Shop by Sport</h2>
+                            <div className="mb-8 flex items-center justify-between">
+                                <h2 className="text-[32px] font-medium uppercase leading-tight text-ink">Curated Categories</h2>
                             </div>
-                            <div className="flex overflow-x-auto gap-4 pb-4 snap-x">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                                 {[
-                                    { title: "Running", image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?q=80&w=800&auto=format&fit=crop" },
-                                    { title: "Training", image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=800&auto=format&fit=crop" },
-                                    { title: "Basketball", image: "https://images.unsplash.com/photo-1542652694-40abf526446e?q=80&w=800&auto=format&fit=crop" },
-                                    { title: "Skateboarding", image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?q=80&w=800&auto=format&fit=crop" }
+                                    { title: "Footwear", image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop" },
+                                    { title: "Upperwear", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop" },
+                                    { title: "Lowerwear", image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop" },
+                                    { title: "Headwear", image: "https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=800&auto=format&fit=crop" }
                                 ].map((cat, idx) => (
-                                    <div key={idx} className="relative min-w-[280px] flex-shrink-0 snap-start aspect-[4/5] bg-soft-cloud overflow-hidden group transition-colors duration-300">
-                                        <img src={cat.image} alt={cat.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                        <div className="absolute inset-0 bg-black/20 transition-opacity group-hover:bg-black/30"></div>
-                                        <div className="absolute bottom-6 left-6">
-                                            <Link href="#" className="flex h-10 items-center justify-center rounded-full bg-white px-6 text-[14px] font-medium text-black transition-transform hover:scale-95">
-                                                {cat.title}
-                                            </Link>
+                                    <Link href="#" key={idx} className="group flex flex-col gap-4">
+                                        <div className="relative aspect-[4/5] md:aspect-square w-full overflow-hidden bg-soft-cloud">
+                                            <img 
+                                                src={cat.image} 
+                                                alt={cat.title} 
+                                                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" 
+                                            />
+                                            <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10"></div>
                                         </div>
-                                    </div>
+                                        <div className="flex items-center justify-between border-b border-hairline pb-4 transition-colors duration-300 group-hover:border-ink">
+                                            <span className="text-[14px] md:text-[16px] font-medium uppercase tracking-[0.1em] text-ink">{cat.title}</span>
+                                            <ArrowUpRight className="h-5 w-5 text-mute transition-all duration-300 group-hover:text-ink group-hover:-translate-y-1 group-hover:translate-x-1" strokeWidth={1.5} />
+                                        </div>
+                                    </Link>
                                 ))}
                             </div>
                         </section>
@@ -222,18 +227,33 @@ export default function Welcome({
                         </section>
                     </ScrollReveal>
 
-                    {/* PHILOSOPHY SECTION */}
-                    <ScrollReveal>
-                        <section className="px-6 py-24 md:px-12 bg-canvas text-ink transition-colors duration-300">
-                            <div className="max-w-4xl mx-auto flex flex-col gap-8 text-center items-center">
-                                <h2 className="text-[32px] md:text-[48px] font-medium leading-[1.1] uppercase tracking-tight">
-                                    Built for the concrete.<br/>Engineered for the future.
-                                </h2>
-                                <p className="text-[16px] text-mute max-w-2xl leading-relaxed">
-                                    Every thread, every seam, every drop is meticulously designed to push boundaries. 
-                                    We believe in extreme typographic contrast, brutalist utility, and gear that speaks 
-                                    louder through its form than its logo. Wear the truth.
-                                </p>
+                    {/* RADICAL AUTHENTICITY SECTION */}
+                    <ScrollReveal className="bg-canvas transition-colors duration-300">
+                        <section className="max-w-[1440px] mx-auto px-6 py-24 md:px-12 text-ink">
+                            <div className="flex flex-col md:flex-row gap-16 md:gap-24">
+                                {/* Left Side: Brand Manifesto */}
+                                <div className="flex flex-col gap-6 md:w-1/2">
+                                    <h2 className="text-[48px] md:text-[64px] font-medium leading-[0.9] uppercase tracking-tight">
+                                        No Cap.<br/>No Fake.
+                                    </h2>
+                                    <p className="text-[16px] text-mute max-w-md leading-relaxed">
+                                        Built for the concrete. Engineered for the future. Every thread, every seam, every drop is meticulously designed to push boundaries. We believe in extreme typographic contrast, brutalist utility, and gear that speaks louder through its form than its logo. Wear the truth.
+                                    </p>
+                                </div>
+                                
+                                {/* Right Side: Trust Guarantees */}
+                                <div className="flex flex-col md:w-1/2">
+                                    {[
+                                        { title: "Legit Checked", desc: "Semua rilisan melewati kurasi dan verifikasi keaslian berlapis. Zero tolerance for counterfeits." },
+                                        { title: "Premium Materials", desc: "Mengkurasi koleksi yang menggunakan material kelas berat (heavyweight) dengan jahitan presisi standar global." },
+                                        { title: "DSWT Guaranteed", desc: "Deadstock with Tags. Dijamin dalam kondisi baru dan 100% sempurna saat proses unboxing." }
+                                    ].map((item, idx) => (
+                                        <div key={idx} className="flex flex-col gap-3 py-8 border-t border-hairline last:border-b transition-colors duration-300 hover:bg-soft-cloud px-4 -mx-4 md:px-6 md:-mx-6 cursor-default">
+                                            <h3 className="text-[18px] md:text-[20px] font-medium uppercase tracking-widest text-ink">{item.title}</h3>
+                                            <p className="text-[14px] md:text-[15px] text-mute leading-relaxed">{item.desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </section>
                     </ScrollReveal>

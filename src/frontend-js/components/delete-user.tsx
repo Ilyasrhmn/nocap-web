@@ -21,15 +21,10 @@ export default function DeleteUser() {
 
     return (
         <div className="space-y-6">
-            <Heading
-                variant="small"
-                title="Delete account"
-                description="Delete your account and all of its resources"
-            />
-            <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
-                <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
-                    <p className="font-medium">Warning</p>
-                    <p className="text-sm">
+            <div className="space-y-4 rounded-none border border-ink bg-soft-cloud p-4">
+                <div className="relative space-y-0.5 text-sale">
+                    <p className="text-[14px] font-bold uppercase tracking-widest">Warning</p>
+                    <p className="text-[12px] font-medium uppercase tracking-wider text-ink">
                         Please proceed with caution, this cannot be undone.
                     </p>
                 </div>
@@ -37,17 +32,17 @@ export default function DeleteUser() {
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button
-                            variant="destructive"
                             data-test="delete-user-button"
+                            className="bg-sale text-canvas hover:bg-sale-deep font-bold uppercase tracking-widest rounded-none h-12"
                         >
                             Delete account
                         </Button>
                     </DialogTrigger>
-                    <DialogContent>
-                        <DialogTitle>
+                    <DialogContent className="rounded-none border-hairline">
+                        <DialogTitle className="text-[18px] font-bold uppercase tracking-tight text-ink">
                             Are you sure you want to delete your account?
                         </DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="text-[14px] text-mute font-medium">
                             Once your account is deleted, all of its resources
                             and data will also be permanently deleted. Please
                             enter your password to confirm you would like to
@@ -77,17 +72,19 @@ export default function DeleteUser() {
                                             id="password"
                                             name="password"
                                             ref={passwordInput}
-                                            placeholder="Password"
+                                            placeholder="ENTER PASSWORD"
                                             autoComplete="current-password"
+                                            className="bg-transparent text-ink placeholder:text-mute placeholder:uppercase border-hairline focus:border-ink rounded-none h-12 px-4"
                                         />
 
                                         <InputError message={errors.password} />
                                     </div>
 
-                                    <DialogFooter className="gap-2">
+                                    <DialogFooter className="gap-2 sm:gap-4">
                                         <DialogClose asChild>
                                             <Button
-                                                variant="secondary"
+                                                variant="outline"
+                                                className="rounded-none font-bold uppercase tracking-widest h-12"
                                                 onClick={() =>
                                                     resetAndClearErrors()
                                                 }
@@ -97,8 +94,8 @@ export default function DeleteUser() {
                                         </DialogClose>
 
                                         <Button
-                                            variant="destructive"
                                             disabled={processing}
+                                            className="bg-sale text-canvas hover:bg-sale-deep font-bold uppercase tracking-widest rounded-none h-12"
                                             asChild
                                         >
                                             <button
