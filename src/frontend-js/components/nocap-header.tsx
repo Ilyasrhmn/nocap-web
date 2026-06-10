@@ -361,6 +361,25 @@ export default function NoCapHeader() {
                                             <span>{accountLabel}</span>
                                         </span>
                                     </Link>
+
+                                    {/* MOBILE LANGUAGE */}
+                                    <div className="flex flex-col gap-3 border-t border-hairline pt-5 mt-2">
+                                        <span className="text-[12px] text-mute uppercase">Language</span>
+                                        <div className="flex items-center gap-6">
+                                            <button 
+                                                onClick={() => { handleLangChange('en'); setIsMenuOpen(false); }}
+                                                className="flex items-center gap-2 text-[14px] font-bold uppercase transition-colors hover:text-mute text-ink"
+                                            >
+                                                <span className="fi fi-us"></span> ENGLISH
+                                            </button>
+                                            <button 
+                                                onClick={() => { handleLangChange('id'); setIsMenuOpen(false); }}
+                                                className="flex items-center gap-2 text-[14px] font-bold uppercase transition-colors hover:text-mute text-ink"
+                                            >
+                                                <span className="fi fi-id"></span> INDONESIA
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </SheetContent>

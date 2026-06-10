@@ -1,9 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
-import { Package, X } from 'lucide-react';
+import { Package, X, Crown, BadgeCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import NoCapLayout from '@/layouts/nocap-layout';
 import AccountSidebar from '@/components/account-sidebar';
-import { getCurrentUser, getSession, getGrails, removeFromGrails, getOrders, EVENTS } from '@/lib/storage';
+import { getCurrentUser, getSession, getGrails, removeFromGrails, getOrders, cancelVipSubscription, renewVipSubscription, EVENTS } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
 import ConfirmationModal from '@/components/confirmation-modal';
 import { t, formatPrice } from '@/lib/i18n';
@@ -51,6 +51,8 @@ export default function Dashboard() {
     }, []);
 
     const [itemToDelete, setItemToDelete] = useState<number | string | null>(null);
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [isRenewModalOpen, setIsRenewModalOpen] = useState(false);
 
     const handleRemoveGrailClick = (id: number | string) => {
         setItemToDelete(id);
@@ -61,6 +63,22 @@ export default function Dashboard() {
             removeFromGrails(itemToDelete);
             showToast(t('toast.removed_from_grails'), 'success');
             setItemToDelete(null);
+        }
+    };
+
+    const confirmCancelVip = () => {
+        if (user) {
+            cancelVipSubscription(user.email);
+            showToast(t('toast.vip_revoked'), 'success');
+            setIsCancelModalOpen(false);
+        }
+    };
+
+    const confirmRenewVip = () => {
+        if (user) {
+            renewVipSubscription(user.email);
+            showToast(t('toast.subscription_extended'), 'success');
+            setIsRenewModalOpen(false);
         }
     };
 
@@ -78,8 +96,22 @@ export default function Dashboard() {
                         <h2 className="text-[20px] font-medium uppercase leading-tight text-ink mb-6">Profile Information</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col">
-                                <span className="text-[12px] font-medium text-mute uppercase tracking-widest mb-1">Name</span>
-                                <span className="text-[16px] font-medium text-ink">{user.name}</span>
+                                <span className="text-[12px] font-medium text-mute uppercase tracking-widest mb-1">{t('dashboard.name') || 'Name'}</span>
+                                <span className="text-[16px] font-medium text-ink flex items-center gap-2">
+                                    {user.name}
+                                    {user.tier === 'VERIFIED' && (
+                                        <span className="flex items-center gap-1 bg-ink text-canvas font-bold px-2 py-1 text-[10px] tracking-widest">
+                                            <BadgeCheck className="w-3 h-3" strokeWidth={3} />
+                                            VERIFIED
+                                        </span>
+                                    )}
+                                    {user.tier === 'GRAIL' && (
+                                        <span className="flex items-center gap-1 border-2 border-ink text-ink font-bold px-2 py-1 text-[10px] tracking-widest">
+                                            <Crown className="w-3 h-3" strokeWidth={3} />
+                                            GRAIL STATUS
+                                        </span>
+                                    )}
+                                </span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-[12px] font-medium text-mute uppercase tracking-widest mb-1">Email</span>
@@ -98,6 +130,35 @@ export default function Dashboard() {
                             </Link>
                         </div>
                     </section>
+
+                    {/* VIP SUBSCRIPTION BLOCK */}
+                    {user.tier && user.tier !== 'MEMBER' && (
+                        <section className="flex flex-col border-2 border-ink p-8 rounded-none mt-[-1rem]">
+                            <h2 className="text-[20px] font-medium uppercase leading-tight text-ink mb-6">VIP SUBSCRIPTION</h2>
+                            <div className="flex flex-col gap-6">
+                                <div className="flex flex-col">
+                                    <span className="text-[12px] font-medium text-mute uppercase tracking-widest mb-1">{t('dashboard.vip_valid_until')}</span>
+                                    <span className="text-[16px] font-bold text-ink">
+                                        {user.vipExpiryDate ? new Date(user.vipExpiryDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A'}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-6 mt-4">
+                                    <button 
+                                        onClick={() => setIsRenewModalOpen(true)}
+                                        className="flex h-12 items-center justify-center rounded-none bg-ink px-8 text-[14px] font-bold uppercase tracking-widest text-canvas transition-transform active:scale-[0.98] hover:bg-ink/90"
+                                    >
+                                        {t('action.renew_subscription')}
+                                    </button>
+                                    <button 
+                                        onClick={() => setIsCancelModalOpen(true)}
+                                        className="text-[14px] font-medium uppercase tracking-widest text-mute hover:text-ink underline transition-colors"
+                                    >
+                                        {t('action.cancel_vip')}
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    )}
 
                     {/* RECENT ORDERS */}
                     <section className="flex flex-col">
@@ -194,13 +255,29 @@ export default function Dashboard() {
                                 ))}
                             </div>
                         )}
-                        <ConfirmationModal 
-                            isOpen={itemToDelete !== null}
-                            onClose={() => setItemToDelete(null)}
-                            onConfirm={confirmRemoveGrail}
-                        />
                     </section>
                 </div>
+                <ConfirmationModal 
+                    isOpen={itemToDelete !== null}
+                    onClose={() => setItemToDelete(null)}
+                    onConfirm={confirmRemoveGrail}
+                    message={t('alert.delete_confirm')}
+                    confirmText={t('alert.yes_delete')}
+                />
+                <ConfirmationModal 
+                    isOpen={isCancelModalOpen}
+                    onClose={() => setIsCancelModalOpen(false)}
+                    onConfirm={confirmCancelVip}
+                    message={t('alert.revoke_vip')}
+                    confirmText={t('alert.yes_revoke')}
+                />
+                <ConfirmationModal 
+                    isOpen={isRenewModalOpen}
+                    onClose={() => setIsRenewModalOpen(false)}
+                    onConfirm={confirmRenewVip}
+                    message={t('alert.extend_vip')}
+                    confirmText={t('alert.yes_extend')}
+                />
             </div>
         </NoCapLayout>
     );

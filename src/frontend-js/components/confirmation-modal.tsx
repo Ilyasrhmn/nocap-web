@@ -6,13 +6,17 @@ type ConfirmationModalProps = {
     onClose: () => void;
     onConfirm: () => void;
     message?: string;
+    confirmText?: string;
+    cancelText?: string;
 };
 
 export default function ConfirmationModal({ 
     isOpen, 
     onClose, 
     onConfirm, 
-    message
+    message,
+    confirmText,
+    cancelText
 }: ConfirmationModalProps) {
     const defaultMessage = t('alert.delete_confirm');
     const [isMounted, setIsMounted] = useState(false);
@@ -48,13 +52,13 @@ export default function ConfirmationModal({
                         }}
                         className="w-full bg-ink text-canvas hover:bg-ink/90 h-12 font-bold uppercase tracking-widest rounded-none transition-transform active:scale-[0.98]"
                     >
-                        {t('alert.yes_delete')}
+                        {confirmText || t('alert.yes_delete')}
                     </button>
                     <button
                         onClick={onClose}
                         className="w-full bg-transparent border border-hairline text-ink hover:border-ink h-12 font-bold uppercase tracking-widest rounded-none transition-colors"
                     >
-                        {t('alert.cancel')}
+                        {cancelText || t('alert.cancel')}
                     </button>
                 </div>
             </div>

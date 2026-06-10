@@ -9,11 +9,11 @@ export default function SmoothScrolling({ children }: { children: React.ReactNod
     useEffect(() => {
         const lenis = new Lenis({
             autoRaf: false,
-            duration: 1.5,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            lerp: 0.08, // Much lighter on CPU than duration-based easing
             orientation: 'vertical',
             gestureOrientation: 'vertical',
             smoothWheel: true,
+            syncTouch: false, // Native touch scroll is 100% hardware accelerated (zero jank)
             wheelMultiplier: 1,
             touchMultiplier: 2,
             infinite: false,

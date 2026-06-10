@@ -124,6 +124,8 @@ export type StoredUser = {
   email: string;
   password: string;
   created_at: string;
+  tier?: 'MEMBER' | 'VERIFIED' | 'GRAIL';
+  vipExpiryDate?: string;
 };
 
 export function getUsers(): StoredUser[] {
@@ -142,7 +144,13 @@ export function registerUser(
     return { success: false, error: 'EMAIL ALREADY REGISTERED' };
   }
 
-  users.push({ name, email, password, created_at: new Date().toISOString() });
+  users.push({ 
+    name, 
+    email, 
+    password, 
+    created_at: new Date().toISOString(),
+    tier: 'MEMBER'
+  });
   setItem(KEYS.USERS, users);
 
   // Auto-login after register
@@ -180,6 +188,52 @@ export function logoutUser(): void {
   dispatch(EVENTS.AUTH_UPDATED);
 }
 
+export function upgradeUserTier(email: string, newTier: 'VERIFIED' | 'GRAIL'): boolean {
+  const users = getUsers();
+  const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+
+  if (!user) return false;
+
+  user.tier = newTier;
+  // Set expiry to 30 days from now
+  const expiry = new Date();
+  expiry.setDate(expiry.getDate() + 30);
+  user.vipExpiryDate = expiry.toISOString();
+
+  setItem(KEYS.USERS, users);
+  dispatch(EVENTS.AUTH_UPDATED);
+  return true;
+}
+
+export function cancelVipSubscription(email: string): boolean {
+  const users = getUsers();
+  const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+
+  if (!user) return false;
+
+  user.tier = 'MEMBER';
+  delete user.vipExpiryDate;
+
+  setItem(KEYS.USERS, users);
+  dispatch(EVENTS.AUTH_UPDATED);
+  return true;
+}
+
+export function renewVipSubscription(email: string): boolean {
+  const users = getUsers();
+  const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+
+  if (!user || !user.vipExpiryDate) return false;
+
+  const currentExpiry = new Date(user.vipExpiryDate);
+  currentExpiry.setDate(currentExpiry.getDate() + 30);
+  user.vipExpiryDate = currentExpiry.toISOString();
+
+  setItem(KEYS.USERS, users);
+  dispatch(EVENTS.AUTH_UPDATED);
+  return true;
+}
+
 export function getSession(): string | null {
   if (!isBrowser()) return null;
   try {
@@ -198,7 +252,13 @@ export function getCurrentUser(): Omit<StoredUser, 'password'> | null {
   const user = users.find((u) => u.email.toLowerCase() === session.toLowerCase());
 
   if (!user) return null;
-  return { name: user.name, email: user.email, created_at: user.created_at };
+  return { 
+    name: user.name, 
+    email: user.email, 
+    created_at: user.created_at,
+    tier: user.tier || 'MEMBER',
+    vipExpiryDate: user.vipExpiryDate
+  };
 }
 
 // ══════════════════════════════════════════════════════

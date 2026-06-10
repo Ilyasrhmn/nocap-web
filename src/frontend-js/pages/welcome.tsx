@@ -216,11 +216,8 @@ export default function Welcome({
                                     <h2 className="mb-6 max-w-3xl text-[48px] font-medium uppercase leading-[0.9] text-white md:text-[64px]">{t('welcome.member_title')}</h2>
                                     <p className="mb-8 max-w-md text-[16px] text-white/90">{t('welcome.member_desc')}</p>
                                     <div className="flex flex-col gap-4 sm:flex-row">
-                                        <Link href={register()} className="flex h-12 items-center justify-center rounded-none bg-white/80 backdrop-blur-sm px-8 text-[16px] font-medium text-black transition-transform hover:scale-95">
-                                            {t('action.join_us')}
-                                        </Link>
-                                        <Link href={login()} className="flex h-12 items-center justify-center rounded-none bg-transparent border border-white/80 px-8 text-[16px] font-medium text-white transition-transform hover:scale-95 hover:bg-white/80 hover:text-black">
-                                            {t('action.sign_in')}
+                                        <Link href="/membership" className="flex h-12 items-center justify-center rounded-none bg-white/80 backdrop-blur-sm px-8 text-[16px] font-medium text-black transition-transform hover:scale-95">
+                                            {t('welcome.view_memberships')}
                                         </Link>
                                     </div>
                                 </div>

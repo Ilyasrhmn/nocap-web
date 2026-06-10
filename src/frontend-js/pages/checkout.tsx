@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getCart, getCartTotal, placeOrder, getSession } from '@/lib/storage';
+import { getCart, getCartTotal, placeOrder, getSession, getCurrentUser } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
 import NoCapLayout from '@/layouts/nocap-layout';
 import { t, formatPrice } from '@/lib/i18n';
@@ -9,11 +9,18 @@ export default function Checkout() {
     const [cart, setCart] = useState(getCart());
     const [total, setTotal] = useState(getCartTotal());
 
+    const [user, setUser] = useState(getCurrentUser());
+
     useEffect(() => {
         // Hydrate data purely on the client
         setCart(getCart());
         setTotal(getCartTotal());
+        setUser(getCurrentUser());
     }, []);
+
+    const isVip = user?.tier === 'VERIFIED' || user?.tier === 'GRAIL';
+    const shippingCost = isVip ? 0 : 15;
+    const finalTotal = total > 0 ? total + shippingCost : 0;
 
     const handlePlaceOrder = (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,7 +37,7 @@ export default function Checkout() {
             return;
         }
 
-        placeOrder(cart, total);
+        placeOrder(cart, finalTotal);
         showToast(t('toast.order_success'), 'success');
         
         window.location.href = '/dashboard';
@@ -159,13 +166,22 @@ export default function Checkout() {
                                 <span>{t('cart.subtotal')}</span>
                                 <span>{formatPrice(total)}</span>
                             </div>
-                            <div className="flex justify-between text-[14px] font-medium uppercase text-mute">
+                            <div className="flex justify-between items-center text-[14px] font-medium uppercase text-mute">
                                 <span>{t('checkout.shipping')}</span>
-                                <span>{t('checkout.shipping_next_step')}</span>
+                                <div className="flex flex-col items-end gap-1">
+                                    {isVip ? (
+                                        <div className="flex items-center gap-2">
+                                            <span className="bg-ink text-canvas text-[10px] font-bold px-2 py-1 tracking-widest">[ VIP FREE SHIPPING APPLIED ]</span>
+                                            <span className="text-ink font-bold">{formatPrice(shippingCost)}</span>
+                                        </div>
+                                    ) : (
+                                        <span>{total > 0 ? formatPrice(shippingCost) : formatPrice(0)}</span>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex justify-between text-[16px] font-bold uppercase text-ink pt-4 border-t border-hairline">
                                 <span>{t('cart.total')}</span>
-                                <span>{formatPrice(total)}</span>
+                                <span>{formatPrice(finalTotal)}</span>
                             </div>
                         </div>
                     </div>

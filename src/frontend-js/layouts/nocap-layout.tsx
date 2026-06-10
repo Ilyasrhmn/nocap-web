@@ -13,7 +13,10 @@ export default function NoCapLayout({ children, title }: { children: React.React
                 <div className="min-h-screen flex flex-col bg-canvas text-ink font-sans selection:bg-ink selection:text-canvas transition-colors duration-300">
                     <NoCapHeader />
 
-                    <div className="flex-1 w-full flex flex-col mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-out fill-mode-both">
+                    <div 
+                        className="flex-1 w-full flex flex-col mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-mode-both"
+                        style={{ willChange: 'transform, opacity', transform: 'translate3d(0,0,0)' }}
+                    >
                         {children}
                     </div>
 

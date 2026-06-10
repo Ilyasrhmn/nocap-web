@@ -1,96 +1,219 @@
 import { Head, Link } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
 import { login, register } from '@/routes';
-import { ChevronDown } from 'lucide-react';
 import NoCapLayout from '@/layouts/nocap-layout';
-import FlowingFaq from '@/components/flowing-faq';
 import ScrollReveal from '@/components/scroll-reveal';
+import FlowingFaq from '@/components/flowing-faq';
+import { t } from '@/lib/i18n';
+import { getCurrentUser, upgradeUserTier } from '@/lib/storage';
+import { useToast } from '@/components/toast-provider';
+import ConfirmationModal from '@/components/confirmation-modal';
+import { Check } from 'lucide-react';
 
-export default function Membership({ canRegister = true }: { canRegister?: boolean }) {
-    const benefits = [
-        {
-            title: "Exclusive Drops",
-            image: "https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=800&auto=format&fit=crop",
-            desc: "First access to our most coveted releases."
-        },
-        {
-            title: "Member Shop",
-            image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=800&auto=format&fit=crop",
-            desc: "A dedicated collection of styles only for you."
-        },
-        {
-            title: "Free Shipping",
-            image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=800&auto=format&fit=crop",
-            desc: "Zero delivery fees on every order, always."
+export default function Membership() {
+    const { showToast } = useToast();
+    const [user, setUser] = useState(getCurrentUser());
+    const [isMounted, setIsMounted] = useState(false);
+    
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTier, setSelectedTier] = useState<'VERIFIED' | 'GRAIL' | null>(null);
+
+    useEffect(() => {
+        setIsMounted(true);
+        const handleAuthUpdate = () => {
+            setUser(getCurrentUser());
+        };
+        if (typeof window !== 'undefined') {
+            window.addEventListener('nocap:auth-updated', handleAuthUpdate);
+            return () => window.removeEventListener('nocap:auth-updated', handleAuthUpdate);
         }
-    ];
+    }, []);
+
+    const handleUpgradeClick = (tier: 'VERIFIED' | 'GRAIL') => {
+        if (!user) {
+            showToast(t('toast.login_required_upgrade'), 'error');
+            return;
+        }
+        setSelectedTier(tier);
+        setIsModalOpen(true);
+    };
+
+    const confirmUpgrade = () => {
+        if (user && selectedTier) {
+            const success = upgradeUserTier(user.email, selectedTier);
+            if (success) {
+                showToast(t('toast.upgrade_success'), 'success');
+                // Could redirect to dashboard using window.location.href if desired, 
+                // but let's just let the toast show and update state.
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1500);
+            }
+        }
+    };
 
     const faqs = [
-        { question: "What is No Cap Membership?", answer: "It's our loyalty program that gives you access to exclusive products, free shipping, and early access to drops." },
-        { question: "Is the membership free?", answer: "Yes, joining the No Cap community is 100% free." },
-        { question: "How do I get early access to drops?", answer: "Make sure you're logged in. We'll send you a notification when an exclusive drop is happening." },
-        { question: "Do I get free returns as a member?", answer: "Yes, members enjoy free returns within 30 days on all eligible purchases." }
+        { question: t('membership.faq1_q'), answer: t('membership.faq1_a') },
+        { question: t('membership.faq2_q'), answer: t('membership.faq2_a') },
+        { question: t('membership.faq3_q'), answer: t('membership.faq3_a') },
+        { question: t('membership.faq4_q'), answer: t('membership.faq4_a') },
+        { question: t('membership.faq5_q'), answer: t('membership.faq5_a') },
+        { question: t('membership.faq6_q'), answer: t('membership.faq6_a') },
+        { question: t('membership.faq7_q'), answer: t('membership.faq7_a') },
+        { question: t('membership.faq8_q'), answer: t('membership.faq8_a') }
     ];
+
+    if (!isMounted) return null;
 
     return (
         <NoCapLayout title="Membership">
+            <main className="flex flex-col bg-canvas">
+                
+                {/* HERO SECTION */}
+                <section className="relative flex min-h-[50vh] w-full flex-col justify-center border-b border-hairline py-24 px-6 md:px-12 bg-canvas">
+                    <div className="flex flex-col items-center justify-center text-center max-w-4xl mx-auto gap-6 mt-12">
+                        <h1 className="text-[64px] font-medium uppercase leading-none tracking-tighter text-ink md:text-[80px]">
+                            {t('membership.hero_title')}
+                        </h1>
+                        <p className="max-w-2xl text-[18px] font-medium text-mute uppercase tracking-widest leading-relaxed">
+                            {t('membership.hero_desc')}
+                        </p>
+                    </div>
+                </section>
 
-                <main className="flex flex-col">
-                    {/* HERO CAMPAIGN TILE */}
-                    <section className="relative flex min-h-[60vh] w-full flex-col justify-end bg-ink bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2000&auto=format&fit=crop")' }}>
-                        <div className="absolute inset-0 bg-black/50"></div>
-                        
-                        <div className="relative z-10 flex w-full flex-col items-center justify-center text-center gap-6 p-6 md:p-12 mb-12">
-                            <h1 className="max-w-4xl text-[64px] font-medium uppercase leading-[0.9] tracking-tight text-white md:text-[96px]">
-                                No Cap<br/>Membership
-                            </h1>
-                            <p className="max-w-lg text-[16px] text-white/90">
-                                The ultimate key to the culture. Get exclusive access to the rarest drops, member-only products, and free shipping on every order.
-                            </p>
-                            <div className="flex gap-4 mt-4">
-                                <Link href={register()} className="flex h-12 items-center justify-center rounded-full bg-white px-8 text-[16px] font-medium text-black transition-transform hover:scale-95">
-                                    Join Us
-                                </Link>
-                                <Link href={login()} className="flex h-12 items-center justify-center rounded-full bg-transparent border border-white px-8 text-[16px] font-medium text-white transition-transform hover:scale-95 hover:bg-white hover:text-black">
-                                    Sign In
-                                </Link>
+                {/* PRICING CARDS */}
+                <ScrollReveal className="px-6 py-24 md:px-12">
+                    <div className="mb-16 text-center">
+                        <h2 className="text-[32px] md:text-[40px] font-medium uppercase leading-none tracking-tighter text-ink">
+                            {t('membership.pricing_title')}
+                        </h2>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-[1440px] mx-auto">
+                        {/* STANDARD TIER */}
+                        <div className="flex flex-col border border-hairline bg-canvas p-8 rounded-none transition-transform hover:-translate-y-2 duration-300">
+                            <h3 className="text-[20px] font-medium uppercase tracking-widest text-ink mb-2">
+                                {t('membership.tier1_name')}
+                            </h3>
+                            <div className="text-[40px] font-medium tracking-tighter text-ink mb-8">
+                                {t('membership.tier1_price')}
                             </div>
-                        </div>
-                    </section>
-
-                    {/* BENEFITS GRID */}
-                    <ScrollReveal className="px-6 py-12 md:px-12 md:py-24">
-                        <div className="mb-12 text-center">
-                            <h2 className="text-[32px] font-medium uppercase leading-tight text-ink">Member Benefits</h2>
-                        </div>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            {benefits.map((benefit, idx) => (
-                                <div key={idx} className="group relative aspect-[4/5] w-full overflow-hidden bg-ink rounded-none text-white">
-                                    <img src={benefit.image} alt={benefit.title} className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105 group-hover:opacity-40" />
-                                    <div className="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-black/80 to-transparent">
-                                        <h3 className="text-[24px] font-medium uppercase leading-tight mb-2">{benefit.title}</h3>
-                                        <p className="text-[16px] opacity-90 mb-6">{benefit.desc}</p>
-                                        <Link href={register()} className="flex h-10 w-max items-center justify-center rounded-full bg-white px-6 text-[14px] font-medium text-black transition-transform hover:scale-95">
-                                            Explore
-                                        </Link>
-                                    </div>
+                            <div className="flex-1 flex flex-col gap-4 mb-8">
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-ink" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-ink">{t('membership.tier1_f1')}</span>
                                 </div>
-                            ))}
-                        </div>
-                    </ScrollReveal>
-
-                    {/* FAQ SECTION — Synchronized with landing page */}
-                    <ScrollReveal className="bg-canvas transition-colors duration-300">
-                        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-                            <div className="pt-16 pb-8">
-                                <h2 className="text-[24px] md:text-[32px] font-medium uppercase leading-tight text-ink">
-                                    Frequently Asked Questions
-                                </h2>
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-ink" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-ink">{t('membership.tier1_f2')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-ink" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-ink">{t('membership.tier1_f3')}</span>
+                                </div>
                             </div>
-                            <FlowingFaq items={faqs} speed={10} />
-                            <div className="pb-16"></div>
+                            <button disabled className="w-full h-14 border border-hairline bg-transparent text-mute font-medium uppercase tracking-widest cursor-not-allowed">
+                                CURRENT TIER
+                            </button>
                         </div>
-                    </ScrollReveal>
-                </main>
+
+                        {/* VERIFIED TIER - HIGHLIGHTED */}
+                        <div className="flex flex-col border-2 border-ink bg-ink p-8 rounded-none transform scale-100 md:scale-105 z-10 shadow-xl">
+                            <h3 className="text-[20px] font-medium uppercase tracking-widest text-canvas mb-2">
+                                {t('membership.tier2_name')}
+                            </h3>
+                            <div className="text-[40px] font-medium tracking-tighter text-canvas mb-8">
+                                {t('membership.tier2_price')}
+                            </div>
+                            <div className="flex-1 flex flex-col gap-4 mb-8">
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-canvas" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-canvas">{t('membership.tier2_f1')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-canvas" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-canvas">{t('membership.tier2_f2')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-canvas" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-canvas">{t('membership.tier2_f3')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-canvas" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-canvas">{t('membership.tier2_f4')}</span>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => handleUpgradeClick('VERIFIED')}
+                                className="w-full h-14 bg-canvas text-ink hover:bg-canvas/90 font-medium uppercase tracking-widest transition-transform active:scale-95"
+                            >
+                                {t('membership.tier2_btn')}
+                            </button>
+                        </div>
+
+                        {/* GRAIL STATUS TIER */}
+                        <div className="flex flex-col border border-hairline bg-canvas p-8 rounded-none transition-transform hover:-translate-y-2 duration-300">
+                            <h3 className="text-[20px] font-medium uppercase tracking-widest text-ink mb-2">
+                                {t('membership.tier3_name')}
+                            </h3>
+                            <div className="text-[40px] font-medium tracking-tighter text-ink mb-8">
+                                {t('membership.tier3_price')}
+                            </div>
+                            <div className="flex-1 flex flex-col gap-4 mb-8">
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-ink" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-ink">{t('membership.tier3_f1')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-ink" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-ink">{t('membership.tier3_f2')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-ink" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-ink">{t('membership.tier3_f3')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-ink" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-ink">{t('membership.tier3_f4')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <Check className="w-5 h-5 text-ink" strokeWidth={2} />
+                                    <span className="text-[14px] font-medium uppercase tracking-widest text-ink">{t('membership.tier3_f5')}</span>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => handleUpgradeClick('GRAIL')}
+                                className="w-full h-14 bg-ink text-canvas hover:bg-ink/90 font-medium uppercase tracking-widest transition-transform active:scale-95"
+                            >
+                                {t('membership.tier3_btn')}
+                            </button>
+                        </div>
+                    </div>
+                </ScrollReveal>
+
+                {/* BRUTALIST FAQ SECTION */}
+                <ScrollReveal className="bg-canvas border-t border-hairline py-24 transition-colors duration-300">
+                    <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+                        <div className="mb-8">
+                            <h2 className="text-[24px] md:text-[32px] font-medium uppercase leading-tight text-ink">
+                                {t('membership.faq_title')}
+                            </h2>
+                        </div>
+                        <FlowingFaq items={faqs} speed={10} />
+                        <div className="pb-16"></div>
+                    </div>
+                </ScrollReveal>
+
+                {/* UPGRADE CONFIRMATION MODAL */}
+                <ConfirmationModal 
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={confirmUpgrade}
+                    message={t('alert.confirm_payment')}
+                    confirmText={t('alert.yes_upgrade')}
+                />
+            </main>
         </NoCapLayout>
     );
 }

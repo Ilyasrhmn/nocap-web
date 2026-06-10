@@ -1,10 +1,14 @@
 import { Link } from '@inertiajs/react';
 import { User, Package, Heart, MapPin, CreditCard, Settings, LogOut } from 'lucide-react';
+import { useState } from 'react';
 import { logoutUser } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
+import ConfirmationModal from '@/components/confirmation-modal';
+import { t } from '@/lib/i18n';
 
 export default function AccountSidebar({ activeMenu = 'profile' }: { activeMenu?: string }) {
     const { showToast } = useToast();
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
     const menus = [
         { name: 'Profile', href: '/dashboard', icon: User, id: 'profile' },
@@ -14,9 +18,10 @@ export default function AccountSidebar({ activeMenu = 'profile' }: { activeMenu?
         { name: 'Payment', href: '/payment', icon: CreditCard, id: 'payment' },
     ];
 
-    const handleLogout = () => {
+    const confirmLogout = () => {
         logoutUser();
-        showToast('SIGNED OUT SUCCESSFULLY', 'success');
+        showToast(t('toast.login_failed') ? 'SIGNED OUT SUCCESSFULLY' : 'SIGNED OUT SUCCESSFULLY', 'success'); // using explicit string or dynamic if available
+        setIsLogoutModalOpen(false);
         setTimeout(() => {
             if (typeof window !== 'undefined') {
                 window.location.href = '/';
@@ -60,12 +65,20 @@ export default function AccountSidebar({ activeMenu = 'profile' }: { activeMenu?
                 </Link>
 
                 <button
-                    onClick={handleLogout}
+                    onClick={() => setIsLogoutModalOpen(true)}
                     className="flex items-center w-full text-left gap-3 py-3 px-4 hover:bg-soft-cloud font-medium uppercase tracking-wider text-[14px] text-sale hover:text-sale-deep transition-colors rounded-none"
                 >
                     <LogOut className="w-5 h-5" /> Sign Out
                 </button>
             </nav>
+
+            <ConfirmationModal 
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={confirmLogout}
+                message={t('alert.confirm_logout')}
+                confirmText={t('alert.yes_logout')}
+            />
         </aside>
     );
 }
