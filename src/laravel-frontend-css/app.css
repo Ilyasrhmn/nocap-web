@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    --font-sans:
+        'Inter', 'Helvetica Now Display Medium', 'Helvetica Now Text', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    /* Shadcn defaults */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    /* DESIGN.md Tokens */
+    --color-canvas: var(--canvas);
+    --color-ink: var(--ink);
+    --color-soft-cloud: var(--soft-cloud);
+    --color-charcoal: var(--charcoal);
+    --color-ash: var(--ash);
+    --color-mute: var(--mute);
+    --color-stone: var(--stone);
+    --color-hairline: var(--hairline);
+    --color-hairline-soft: var(--hairline-soft);
+    --color-sale: var(--sale);
+    --color-success: var(--success);
+}
+
+:root {
+    --background: #ffffff;
+    --foreground: #111111;
+    --card: #ffffff;
+    --card-foreground: #111111;
+    --popover: #ffffff;
+    --popover-foreground: #111111;
+    --primary: #111111;
+    --primary-foreground: #ffffff;
+    --secondary: #f5f5f5;
+    --secondary-foreground: #111111;
+    --muted: #f5f5f5;
+    --muted-foreground: #707072;
+    --accent: #f5f5f5;
+    --accent-foreground: #111111;
+    --destructive: #d30005;
+    --destructive-foreground: #ffffff;
+    --border: #cacacb;
+    --input: #cacacb;
+    --ring: #111111;
+    --radius: 0px;
+
+    /* DESIGN.md vars */
+    --canvas: #ffffff;
+    --ink: #111111;
+    --soft-cloud: #f5f5f5;
+    --charcoal: #39393b;
+    --ash: #4b4b4d;
+    --mute: #707072;
+    --stone: #9e9ea0;
+    --hairline: #cacacb;
+    --hairline-soft: #e5e5e5;
+    --sale: #d30005;
+    --success: #007d48;
+}
+
+.dark {
+    --background: #111111;
+    --foreground: #ffffff;
+    --card: #111111;
+    --card-foreground: #ffffff;
+    --popover: #111111;
+    --popover-foreground: #ffffff;
+    --primary: #ffffff;
+    --primary-foreground: #111111;
+    --secondary: #222222;
+    --secondary-foreground: #ffffff;
+    --muted: #222222;
+    --muted-foreground: #9e9ea0;
+    --accent: #222222;
+    --accent-foreground: #ffffff;
+    --destructive: #ff4433;
+    --destructive-foreground: #ffffff;
+    --border: #39393b;
+    --input: #39393b;
+    --ring: #ffffff;
+
+    /* DESIGN.md vars */
+    --canvas: #111111;
+    --ink: #ffffff;
+    --soft-cloud: #222222;
+    --charcoal: #e5e5e5;
+    --ash: #cacacb;
+    --mute: #9e9ea0;
+    --stone: #707072;
+    --hairline: #39393b;
+    --hairline-soft: #222222;
+    --sale: #ff4433;
+    --success: #1eaa52;
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+}
