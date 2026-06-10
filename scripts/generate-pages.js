@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const pagesDir = path.join(process.cwd(), 'src/laravel-frontend-js/pages');
+const pagesDir = path.join(process.cwd(), 'src/frontend-js/pages');
 const astroPagesDir = path.join(process.cwd(), 'src/pages');
 
 // Ensure pages dir exists
@@ -48,7 +48,7 @@ for (const filePath of tsxFiles) {
 
     const astroContent = `---
 import ${componentName} from '${importPath}';
-import '@/../laravel-frontend-css/app.css';
+import '@/../frontend-css/app.css';
 ---
 
 <html lang="en">

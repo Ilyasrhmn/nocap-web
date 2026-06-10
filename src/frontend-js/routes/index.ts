@@ -11,7 +11,7 @@ export const login = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 login.definition = {
     methods: ["get","head"],
-    url: '/login',
+    url: '/auth/login',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
@@ -96,7 +96,7 @@ export const logout = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
 
 logout.definition = {
     methods: ["post"],
-    url: '/logout',
+    url: '/auth/logout',
 } satisfies RouteDefinition<["post"]>
 
 /**
@@ -156,7 +156,7 @@ export const register = (options?: RouteQueryOptions): RouteDefinition<'get'> =>
 
 register.definition = {
     methods: ["get","head"],
-    url: '/register',
+    url: '/auth/register',
 } satisfies RouteDefinition<["get","head"]>
 
 /**

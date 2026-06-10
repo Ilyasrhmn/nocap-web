@@ -13,7 +13,7 @@ export default defineConfig({
     resolve: {
       alias: {
         '@inertiajs/react': '/src/lib/inertia-mock.tsx',
-        '@': '/src/laravel-frontend-js'
+        '@': '/src/frontend-js'
       }
     }
   }

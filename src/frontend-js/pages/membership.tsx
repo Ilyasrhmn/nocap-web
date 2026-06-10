@@ -2,6 +2,8 @@ import { Head, Link } from '@inertiajs/react';
 import { login, register } from '@/routes';
 import { ChevronDown } from 'lucide-react';
 import NoCapLayout from '@/layouts/nocap-layout';
+import FlowingFaq from '@/components/flowing-faq';
+import ScrollReveal from '@/components/scroll-reveal';
 
 export default function Membership({ canRegister = true }: { canRegister?: boolean }) {
     const benefits = [
@@ -23,10 +25,10 @@ export default function Membership({ canRegister = true }: { canRegister?: boole
     ];
 
     const faqs = [
-        { q: "What is No Cap Membership?", a: "It's our loyalty program that gives you access to exclusive products, free shipping, and early access to drops." },
-        { q: "Is the membership free?", a: "Yes, joining the No Cap community is 100% free." },
-        { q: "How do I get early access to drops?", a: "Make sure you're logged in. We'll send you a notification when an exclusive drop is happening." },
-        { q: "Do I get free returns as a member?", a: "Yes, members enjoy free returns within 30 days on all eligible purchases." }
+        { question: "What is No Cap Membership?", answer: "It's our loyalty program that gives you access to exclusive products, free shipping, and early access to drops." },
+        { question: "Is the membership free?", answer: "Yes, joining the No Cap community is 100% free." },
+        { question: "How do I get early access to drops?", answer: "Make sure you're logged in. We'll send you a notification when an exclusive drop is happening." },
+        { question: "Do I get free returns as a member?", answer: "Yes, members enjoy free returns within 30 days on all eligible purchases." }
     ];
 
     return (
@@ -56,7 +58,7 @@ export default function Membership({ canRegister = true }: { canRegister?: boole
                     </section>
 
                     {/* BENEFITS GRID */}
-                    <section className="px-6 py-12 md:px-12 md:py-24">
+                    <ScrollReveal className="px-6 py-12 md:px-12 md:py-24">
                         <div className="mb-12 text-center">
                             <h2 className="text-[32px] font-medium uppercase leading-tight text-ink">Member Benefits</h2>
                         </div>
@@ -74,27 +76,20 @@ export default function Membership({ canRegister = true }: { canRegister?: boole
                                 </div>
                             ))}
                         </div>
-                    </section>
+                    </ScrollReveal>
 
-                    {/* FAQ SECTION */}
-                    <section className="px-6 py-12 md:px-12 md:py-24 max-w-4xl mx-auto w-full">
-                        <div className="mb-8">
-                            <h2 className="text-[32px] font-medium uppercase leading-tight text-ink">Frequently Asked Questions</h2>
+                    {/* FAQ SECTION — Synchronized with landing page */}
+                    <ScrollReveal className="bg-canvas transition-colors duration-300">
+                        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+                            <div className="pt-16 pb-8">
+                                <h2 className="text-[24px] md:text-[32px] font-medium uppercase leading-tight text-ink">
+                                    Frequently Asked Questions
+                                </h2>
+                            </div>
+                            <FlowingFaq items={faqs} speed={10} />
+                            <div className="pb-16"></div>
                         </div>
-                        <div className="flex flex-col border-t border-hairline">
-                            {faqs.map((faq, idx) => (
-                                <details key={idx} className="group py-6 border-b border-hairline cursor-pointer">
-                                    <summary className="flex items-center justify-between text-[16px] font-medium text-ink list-none marker:hidden">
-                                        {faq.q}
-                                        <ChevronDown className="w-5 h-5 text-ink transition-transform group-open:rotate-180" />
-                                    </summary>
-                                    <p className="mt-4 text-[16px] text-mute pr-8 leading-relaxed">
-                                        {faq.a}
-                                    </p>
-                                </details>
-                            ))}
-                        </div>
-                    </section>
+                    </ScrollReveal>
                 </main>
         </NoCapLayout>
     );

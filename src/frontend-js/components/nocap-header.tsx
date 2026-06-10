@@ -1,7 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useAppearance } from '@/hooks/use-appearance';
-import { Menu, Moon, Sun, ShoppingBag, User, X, Plus, Minus } from 'lucide-react';
-import { useState, type ReactElement } from 'react';
+import { Menu, Moon, Sun, ShoppingCart, User, X, Plus, Minus } from 'lucide-react';
+import { useState, useEffect, useRef, type ReactElement } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 type CartSheetProps = {
@@ -95,31 +95,58 @@ export default function NoCapHeader() {
         { label: 'Store', href: '/store' },
     ];
 
+    const [isHidden, setIsHidden] = useState(false);
+    const lastScrollY = useRef(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            
+            // If scrolling down and we have scrolled past the header height
+            if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
+                setIsHidden(true);
+            } else if (currentScrollY < lastScrollY.current) {
+                // If scrolling up
+                setIsHidden(false);
+            }
+            
+            lastScrollY.current = currentScrollY;
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     const toggleTheme = () => {
         updateAppearance(resolvedAppearance === 'dark' ? 'light' : 'dark');
     };
 
     return (
-        <header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-hairline bg-canvas px-6 md:px-12 transition-colors duration-300 shrink-0">
+        <header className={`sticky top-0 z-50 flex h-20 items-center justify-between border-b border-hairline bg-canvas px-6 md:px-12 shrink-0 transition-transform duration-500 ease-out ${isHidden ? '-translate-y-full' : 'translate-y-0'}`}>
             <div className="flex items-center gap-3">
                 {/* LOGO */}
                 <Link href="/" className="flex items-center">
                     <img 
-                        src={resolvedAppearance === 'dark' ? '/images/logo-white.png' : '/images/logo-black.png'} 
+                        src="/images/logo-black.png" 
                         alt="NO CAP" 
-                        className="h-15 w-auto object-contain"
+                        className="h-15 w-auto object-contain dark:hidden"
+                    />
+                    <img 
+                        src="/images/logo-white.png" 
+                        alt="NO CAP" 
+                        className="h-15 w-auto object-contain hidden dark:block"
                     />
                 </Link>
             </div>
             
             <div className="flex items-center h-full">
                 {/* NAVIGATION LINKS */}
-                <nav className="hidden items-center gap-8 text-[14px] font-bold uppercase tracking-widest text-ink md:flex h-full px-8">
+                <nav className="hidden items-center gap-8 text-[15px] font-medium uppercase tracking-[0.15em] text-ink md:flex h-full px-8">
                     {navItems.map((item) => (
                         <Link
                             key={item.label}
                             href={item.href}
-                            className="hover:text-mute transition-colors"
+                            className="relative inline-block after:absolute after:-bottom-1 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:origin-bottom-left hover:after:scale-x-100 transition-colors"
                         >
                             {item.label}
                         </Link>
@@ -130,47 +157,57 @@ export default function NoCapHeader() {
                 <div className="hidden md:block h-8 w-px bg-hairline mx-4"></div>
 
                 {/* ICONS */}
-                <div className="hidden md:flex items-center gap-6">
+                <div className="hidden md:flex items-center gap-4">
                     <button 
                         onClick={toggleTheme} 
-                        className="flex items-center justify-center text-ink hover:text-mute transition-colors"
+                        className="group flex h-12 w-12 items-center justify-center rounded-full text-ink transition-all duration-300"
                         aria-label="Toggle Theme"
                     >
-                        {resolvedAppearance === 'dark' ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
+                        <Moon className="h-6 w-6 dark:hidden transition-all duration-300 group-hover:fill-current group-hover:scale-110" strokeWidth={1.25} />
+                        <Sun className="h-6 w-6 hidden dark:block transition-all duration-300 group-hover:fill-current group-hover:scale-110" strokeWidth={1.25} />
                     </button>
                     <CartSheet
                         trigger={
-                            <button type="button" className="flex items-center justify-center text-ink hover:text-mute transition-colors relative group">
-                                <ShoppingBag className="h-6 w-6" />
-                                <span className="absolute -top-1 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-ink text-[10px] font-bold text-canvas transition-colors group-hover:bg-mute">
+                            <button type="button" className="group flex h-12 w-12 items-center justify-center rounded-full text-ink transition-all duration-300 relative">
+                                <ShoppingCart className="h-6 w-6 transition-all duration-300 group-hover:fill-current group-hover:scale-110" strokeWidth={1.25} />
+                                <span className="absolute top-2 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-ink text-[10px] font-bold text-canvas transition-colors duration-300 group-hover:bg-canvas group-hover:text-ink">
                                     2
                                 </span>
                             </button>
                         }
                     />
-
                     <Link 
-                        href={auth.user ? "/dashboard" : "/login"} 
-                        className="flex items-center justify-center text-ink hover:text-mute transition-colors"
+                        href={auth.user ? "/dashboard" : "/auth/login"} 
+                        className="group flex h-12 w-12 items-center justify-center rounded-full text-ink transition-all duration-300"
                     >
-                        <User className="h-6 w-6" />
+                        <User className="h-6 w-6 transition-all duration-300 group-hover:fill-current group-hover:scale-110" strokeWidth={1.25} />
                     </Link>
                 </div>
 
                 {/* MOBILE MENU */}
-                <div className="md:hidden">
+                <div className="flex items-center gap-4 md:hidden">
+                    <CartSheet
+                        trigger={
+                            <button type="button" className="group flex h-10 w-10 items-center justify-center rounded-full text-ink transition-all duration-300 relative">
+                                <ShoppingCart className="h-6 w-6 transition-all duration-300 group-hover:fill-current group-hover:scale-110" strokeWidth={1.25} />
+                                <span className="absolute top-1 right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-ink text-[8px] font-bold text-canvas transition-colors duration-300 group-hover:bg-canvas group-hover:text-ink">
+                                    2
+                                </span>
+                            </button>
+                        }
+                    />
                     <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                         <SheetTrigger asChild>
                             <button
                                 type="button"
                                 aria-label={isMenuOpen ? 'Close navigation' : 'Open navigation'}
                                 aria-expanded={isMenuOpen}
-                                className="flex h-10 w-10 items-center justify-center text-ink transition-colors hover:text-mute"
+                                className="group flex h-10 w-10 items-center justify-center rounded-full text-ink transition-all duration-300"
                             >
                                 {isMenuOpen ? (
-                                    <X className="h-6 w-6" />
+                                    <X className="h-6 w-6 transition-all duration-300 group-hover:scale-110" strokeWidth={1.25} />
                                 ) : (
-                                    <Menu className="h-6 w-6" />
+                                    <Menu className="h-6 w-6 transition-all duration-300 group-hover:fill-current group-hover:scale-110" strokeWidth={1.25} />
                                 )}
                             </button>
                         </SheetTrigger>
@@ -200,16 +237,10 @@ export default function NoCapHeader() {
                                         className="flex items-center justify-between transition-colors hover:text-mute"
                                     >
                                         <span className="flex items-center gap-3">
-                                            {resolvedAppearance === 'dark' ? (
-                                                <Sun className="h-5 w-5" />
-                                            ) : (
-                                                <Moon className="h-5 w-5" />
-                                            )}
-                                            <span>
-                                                {resolvedAppearance === 'dark'
-                                                    ? 'Light Mode'
-                                                    : 'Dark Mode'}
-                                            </span>
+                                            <Moon className="h-5 w-5 dark:hidden" strokeWidth={1.25} />
+                                            <Sun className="h-5 w-5 hidden dark:block" strokeWidth={1.25} />
+                                            <span className="dark:hidden">Dark Mode</span>
+                                            <span className="hidden dark:block">Light Mode</span>
                                         </span>
                                     </button>
                                     <CartSheet
@@ -219,7 +250,7 @@ export default function NoCapHeader() {
                                                 className="flex items-center justify-between transition-colors hover:text-mute"
                                             >
                                                 <span className="flex items-center gap-3">
-                                                    <ShoppingBag className="h-5 w-5" />
+                                                    <ShoppingCart className="h-5 w-5" strokeWidth={1.25} />
                                                     <span>Cart</span>
                                                 </span>
                                                 <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1 text-[10px] font-bold text-canvas">
@@ -229,12 +260,12 @@ export default function NoCapHeader() {
                                         }
                                     />
                                     <Link
-                                        href={auth.user ? '/dashboard' : '/login'}
+                                        href={auth.user ? '/dashboard' : '/auth/login'}
                                         onClick={() => setIsMenuOpen(false)}
                                         className="flex items-center justify-between transition-colors hover:text-mute"
                                     >
                                         <span className="flex items-center gap-3">
-                                            <User className="h-5 w-5" />
+                                            <User className="h-5 w-5" strokeWidth={1.25} />
                                             <span>{auth.user ? 'Account' : 'Login'}</span>
                                         </span>
                                     </Link>

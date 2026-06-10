@@ -12,7 +12,7 @@
     "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/laravel-frontend-js/*"]
+      "@/*": ["src/frontend-js/*"]
     }
   }
 }

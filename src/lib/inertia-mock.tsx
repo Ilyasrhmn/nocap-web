@@ -53,28 +53,10 @@ export const useForm = (initialData: any) => {
     };
 };
 
-export const Form = ({ children, onSubmit, ...props }: any) => {
-    return <form onSubmit={(e) => { e.preventDefault(); if (onSubmit) onSubmit(e); }} {...props}>{children}</form>;
-};
-
-export const setLayoutProps = () => {};
-
-export const useHttp = () => ({
-    get: () => Promise.resolve({ data: {} }),
-    post: () => Promise.resolve({ data: {} }),
-    put: () => Promise.resolve({ data: {} }),
-    delete: () => Promise.resolve({ data: {} }),
-});
-
-export type InertiaLinkProps = any;
-
-export const createInertiaApp = () => {};
-
 export const router = {
     get: (url: string) => { if (typeof window !== 'undefined') window.location.href = url; },
     post: (url: string) => { console.log('router.post', url); },
     put: (url: string) => { console.log('router.put', url); },
     delete: (url: string) => { console.log('router.delete', url); },
     visit: (url: string) => { if (typeof window !== 'undefined') window.location.href = url; },
-    cancelAll: () => {},
 };
