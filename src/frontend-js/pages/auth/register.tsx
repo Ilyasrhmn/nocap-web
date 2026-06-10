@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
 import { registerUser } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
+import { t } from '@/lib/i18n';
 
 export default function Register() {
     const { showToast } = useToast();
@@ -17,14 +18,14 @@ export default function Register() {
         setError('');
 
         if (password !== confirmPassword) {
-            setError('PASSWORDS DO NOT MATCH');
-            showToast('PASSWORDS DO NOT MATCH', 'error');
+            setError(t('toast.passwords_do_not_match'));
+            showToast(t('toast.passwords_do_not_match'), 'error');
             return;
         }
 
         if (password.length < 6) {
-            setError('PASSWORD MUST BE AT LEAST 6 CHARACTERS');
-            showToast('PASSWORD TOO SHORT', 'error');
+            setError(t('toast.password_too_short'));
+            showToast(t('toast.password_too_short'), 'error');
             return;
         }
 
@@ -32,15 +33,15 @@ export default function Register() {
         const result = registerUser(name, email, password);
 
         if (result.success) {
-            showToast('ACCOUNT CREATED — WELCOME', 'success');
+            showToast(t('toast.account_created'), 'success');
             setTimeout(() => {
                 if (typeof window !== 'undefined') {
                     window.location.href = '/dashboard';
                 }
             }, 500);
         } else {
-            setError(result.error || 'REGISTRATION FAILED');
-            showToast(result.error || 'REGISTRATION FAILED', 'error');
+            setError(result.error || t('toast.registration_failed'));
+            showToast(result.error || t('toast.registration_failed'), 'error');
             setProcessing(false);
         }
     };

@@ -5,39 +5,40 @@ import NoCapLayout from '@/layouts/nocap-layout';
 import ScrollReveal from '@/components/scroll-reveal';
 import FlowingFaq from '@/components/flowing-faq';
 import { login, register } from '@/routes';
+import { t, formatPrice } from '@/lib/i18n';
 
 const heroSlides = [
     {
         image: 'https://images.unsplash.com/photo-1550639525-c97d455acf70?q=80&w=2000&auto=format&fit=crop',
-        title: "The Urban\nUtility Drop",
-        desc: 'Built for the concrete. The new fall collection merges minimalist aesthetics with absolute functionality.'
+        title: t('hero.slide1_title'),
+        desc: t('hero.slide1_desc')
     },
     {
         image: 'https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=2000&auto=format&fit=crop',
-        title: "Street\nEssentials",
-        desc: 'Everyday staples engineered for the modern environment.'
+        title: t('hero.slide2_title'),
+        desc: t('hero.slide2_desc')
     },
     {
         image: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2000&auto=format&fit=crop',
-        title: "Footwear\nEvolution",
-        desc: 'Step into the future with our latest sneaker drops.'
+        title: t('hero.slide3_title'),
+        desc: t('hero.slide3_desc')
     }
 ];
 
 const trendingItems = [
-    { name: "NCP Heavyweight Hoodie", subtitle: "Men's Fleece Pullover", price: "$120", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop" },
-    { name: "NCP Tech Cargo", subtitle: "Men's Utility Pants", price: "$145", image: "https://images.unsplash.com/photo-1517438476312-10d79c077509?q=80&w=800&auto=format&fit=crop" },
-    { name: "NCP Shield Jacket", subtitle: "Weather Resistant Outerwear", price: "$180", image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" },
-    { name: "NCP Box Tee", subtitle: "Heavyweight Cotton T-Shirt", price: "$45", image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800&auto=format&fit=crop" },
-    { name: "NCP Oversized Flannel", subtitle: "Heavyweight Layer", price: "$110", image: "https://images.unsplash.com/photo-1599508704512-2f19efd1eede?q=80&w=800&auto=format&fit=crop" },
-    { name: "NCP Utility Vest", subtitle: "Tactical Gear", price: "$130", image: "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?q=80&w=800&auto=format&fit=crop" },
+    { name: "NCP Heavyweight Hoodie", subtitle: "Men's Fleece Pullover", price: 20, image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop" },
+    { name: "NCP Tech Cargo", subtitle: "Men's Utility Pants", price: 25, image: "https://images.unsplash.com/photo-1517438476312-10d79c077509?q=80&w=800&auto=format&fit=crop" },
+    { name: "NCP Shield Jacket", subtitle: "Weather Resistant Outerwear", price: 50, image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop" },
+    { name: "NCP Box Tee", subtitle: "Heavyweight Cotton T-Shirt", price: 15, image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800&auto=format&fit=crop" },
+    { name: "NCP Oversized Flannel", subtitle: "Heavyweight Layer", price: 22, image: "https://images.unsplash.com/photo-1599508704512-2f19efd1eede?q=80&w=800&auto=format&fit=crop" },
+    { name: "NCP Utility Vest", subtitle: "Tactical Gear", price: 30, image: "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?q=80&w=800&auto=format&fit=crop" },
 ];
 
 const faqs = [
-    { question: "How do your drops work?", answer: "We release limited quantities on a schedule. Once a drop sells out, it's gone for good. Members get early access to select drops." },
-    { question: "What is the membership program?", answer: "Membership is free. It gives you early access to drops, exclusive products, and free shipping on all orders." },
-    { question: "Do you ship internationally?", answer: "Yes, we ship globally. Shipping costs and times are calculated at checkout based on your location." },
-    { question: "What is your return policy?", answer: "You have 30 days to return your items in original condition. Members get free return shipping." }
+    { question: t('faq.q1'), answer: t('faq.a1') },
+    { question: t('faq.q2'), answer: t('faq.a2') },
+    { question: t('faq.q3'), answer: t('faq.a3') },
+    { question: t('faq.q4'), answer: t('faq.a4') }
 ];
 
 export default function Welcome({
@@ -132,7 +133,7 @@ export default function Welcome({
                     <ScrollReveal>
                         <section className="px-6 py-12 md:px-12 group/trending">
                             <div className="mb-6 flex items-center justify-between">
-                                <h2 className="text-[32px] font-medium uppercase leading-tight text-ink">Trending Now</h2>
+                                <h2 className="text-[32px] font-medium uppercase leading-tight text-ink">{t('welcome.trending_now')}</h2>
                                 <div className="flex gap-2 opacity-0 group-hover/trending:opacity-100 transition-opacity">
                                     <button 
                                         onClick={() => scrollTrending('left')}
@@ -166,7 +167,7 @@ export default function Welcome({
                                         <div className="flex flex-col pt-3 gap-1">
                                             <h3 className="text-[16px] font-medium text-ink leading-tight">{item.name}</h3>
                                             <p className="text-[14px] font-medium text-mute">{item.subtitle}</p>
-                                            <p className="mt-1 text-[16px] font-medium text-ink">{item.price}</p>
+                                            <p className="mt-1 text-[16px] font-medium text-ink">{formatPrice(item.price)}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -178,7 +179,7 @@ export default function Welcome({
                     <ScrollReveal>
                         <section className="px-6 py-12 md:px-12 border-t border-hairline transition-colors duration-300">
                             <div className="mb-8 flex items-center justify-between">
-                                <h2 className="text-[32px] font-medium uppercase leading-tight text-ink">Curated Categories</h2>
+                                <h2 className="text-[32px] font-medium uppercase leading-tight text-ink">{t('welcome.curated_categories')}</h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                                 {[
@@ -212,14 +213,14 @@ export default function Welcome({
                              <div className="relative flex min-h-[60vh] w-full flex-col justify-end bg-ink bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=2000&auto=format&fit=crop")' }}>
                                 <div className="absolute inset-0 bg-black/40"></div>
                                 <div className="relative z-10 flex flex-col items-center text-center p-6 md:p-12">
-                                    <h2 className="mb-6 max-w-3xl text-[48px] font-medium uppercase leading-[0.9] text-white md:text-[64px]">Become A Member</h2>
-                                    <p className="mb-8 max-w-md text-[16px] text-white/90">Sign up for free. Join the community. Never miss a drop.</p>
+                                    <h2 className="mb-6 max-w-3xl text-[48px] font-medium uppercase leading-[0.9] text-white md:text-[64px]">{t('welcome.member_title')}</h2>
+                                    <p className="mb-8 max-w-md text-[16px] text-white/90">{t('welcome.member_desc')}</p>
                                     <div className="flex flex-col gap-4 sm:flex-row">
                                         <Link href={register()} className="flex h-12 items-center justify-center rounded-none bg-white/80 backdrop-blur-sm px-8 text-[16px] font-medium text-black transition-transform hover:scale-95">
-                                            Join Us
+                                            {t('action.join_us')}
                                         </Link>
                                         <Link href={login()} className="flex h-12 items-center justify-center rounded-none bg-transparent border border-white/80 px-8 text-[16px] font-medium text-white transition-transform hover:scale-95 hover:bg-white/80 hover:text-black">
-                                            Sign In
+                                            {t('action.sign_in')}
                                         </Link>
                                     </div>
                                 </div>
@@ -233,20 +234,20 @@ export default function Welcome({
                             <div className="flex flex-col md:flex-row gap-16 md:gap-24">
                                 {/* Left Side: Brand Manifesto */}
                                 <div className="flex flex-col gap-6 md:w-1/2">
-                                    <h2 className="text-[48px] md:text-[64px] font-medium leading-[0.9] uppercase tracking-tight">
-                                        No Cap.<br/>No Fake.
+                                    <h2 className="whitespace-pre-line text-[48px] md:text-[64px] font-medium leading-[0.9] uppercase tracking-tight">
+                                        {t('hero.title')}
                                     </h2>
                                     <p className="text-[16px] text-mute max-w-md leading-relaxed">
-                                        Built for the concrete. Engineered for the future. Every thread, every seam, every drop is meticulously designed to push boundaries. We believe in extreme typographic contrast, brutalist utility, and gear that speaks louder through its form than its logo. Wear the truth.
+                                        {t('hero.subtitle')}
                                     </p>
                                 </div>
                                 
                                 {/* Right Side: Trust Guarantees */}
                                 <div className="flex flex-col md:w-1/2">
                                     {[
-                                        { title: "Legit Checked", desc: "Semua rilisan melewati kurasi dan verifikasi keaslian berlapis. Zero tolerance for counterfeits." },
-                                        { title: "Premium Materials", desc: "Mengkurasi koleksi yang menggunakan material kelas berat (heavyweight) dengan jahitan presisi standar global." },
-                                        { title: "DSWT Guaranteed", desc: "Deadstock with Tags. Dijamin dalam kondisi baru dan 100% sempurna saat proses unboxing." }
+                                        { title: t('trust.legit_checked'), desc: t('trust.legit_desc') },
+                                        { title: t('trust.premium_materials'), desc: t('trust.premium_desc') },
+                                        { title: t('trust.dswt'), desc: t('trust.dswt_desc') }
                                     ].map((item, idx) => (
                                         <div key={idx} className="flex flex-col gap-3 py-8 border-t border-hairline last:border-b transition-colors duration-300 hover:bg-soft-cloud px-4 -mx-4 md:px-6 md:-mx-6 cursor-default">
                                             <h3 className="text-[18px] md:text-[20px] font-medium uppercase tracking-widest text-ink">{item.title}</h3>

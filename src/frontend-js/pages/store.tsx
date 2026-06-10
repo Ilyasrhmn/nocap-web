@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { MapPin } from 'lucide-react';
 import NoCapLayout from '@/layouts/nocap-layout';
+import { t } from '@/lib/i18n';
 
 export default function Store() {
     return (
@@ -12,7 +13,7 @@ export default function Store() {
                     <div className="flex items-center gap-4 text-ink mb-6">
                         <MapPin className="w-10 h-10" />
                         <h1 className="text-[32px] md:text-[48px] font-black uppercase leading-none tracking-tighter">
-                            HEADQUARTERS
+                            {t('store.headquarters')}
                         </h1>
                     </div>
                     
@@ -20,7 +21,7 @@ export default function Store() {
                     
                     <div className="flex flex-col gap-8">
                         <div>
-                            <h3 className="text-[14px] font-bold uppercase tracking-widest text-mute mb-2">Address</h3>
+                            <h3 className="text-[14px] font-bold uppercase tracking-widest text-mute mb-2">{t('store.address_label')}</h3>
                             <p className="text-[24px] font-medium uppercase text-ink leading-tight">
                                 Condong Catur, Sleman<br />
                                 Yogyakarta, Indonesia<br />
@@ -29,21 +30,21 @@ export default function Store() {
                         </div>
                         
                         <div>
-                            <h3 className="text-[14px] font-bold uppercase tracking-widest text-mute mb-2">Hours</h3>
+                            <h3 className="text-[14px] font-bold uppercase tracking-widest text-mute mb-2">{t('store.hours_label')}</h3>
                             <div className="flex flex-col gap-2 text-[16px] font-medium text-ink uppercase tracking-wider">
                                 <div className="flex justify-between max-w-xs border-b border-hairline pb-2">
-                                    <span>MON - FRI</span>
+                                    <span>{t('store.mon_fri')}</span>
                                     <span>10:00 - 22:00</span>
                                 </div>
                                 <div className="flex justify-between max-w-xs border-b border-hairline pb-2">
-                                    <span>SAT - SUN</span>
+                                    <span>{t('store.sat_sun')}</span>
                                     <span>09:00 - 23:00</span>
                                 </div>
                             </div>
                         </div>
 
                         <div>
-                            <h3 className="text-[14px] font-bold uppercase tracking-widest text-mute mb-2">Contact</h3>
+                            <h3 className="text-[14px] font-bold uppercase tracking-widest text-mute mb-2">{t('store.contact_label')}</h3>
                             <p className="text-[16px] font-medium text-ink uppercase tracking-wider">
                                 INFO@NOCAP.COM<br />
                                 +62 812 3456 7890

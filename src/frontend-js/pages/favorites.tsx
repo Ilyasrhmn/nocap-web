@@ -6,6 +6,7 @@ import AccountSidebar from '@/components/account-sidebar';
 import { getSession, getGrails, removeFromGrails, EVENTS } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
 import ConfirmationModal from '@/components/confirmation-modal';
+import { t, formatPrice } from '@/lib/i18n';
 
 export default function Favorites() {
     const { showToast } = useToast();
@@ -36,7 +37,7 @@ export default function Favorites() {
     const confirmRemove = () => {
         if (itemToDelete !== null) {
             removeFromGrails(itemToDelete);
-            showToast('REMOVED FROM GRAILS', 'success');
+            showToast(t('toast.removed_from_grails'), 'success');
             setItemToDelete(null);
         }
     };
@@ -84,7 +85,7 @@ export default function Favorites() {
                                                     <p className="text-[12px] font-medium text-mute uppercase mt-1">{item.category}</p>
                                                 )}
                                             </div>
-                                            <p className="text-[14px] font-medium text-ink">${item.price}</p>
+                                            <p className="text-[14px] font-medium text-ink">{formatPrice(item.price)}</p>
                                         </div>
                                     </div>
                                 ))}

@@ -6,6 +6,7 @@ import AccountSidebar from '@/components/account-sidebar';
 import { getCurrentUser, getSession, getGrails, removeFromGrails, getOrders, EVENTS } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
 import ConfirmationModal from '@/components/confirmation-modal';
+import { t, formatPrice } from '@/lib/i18n';
 
 export default function Dashboard() {
     const { showToast } = useToast();
@@ -58,7 +59,7 @@ export default function Dashboard() {
     const confirmRemoveGrail = () => {
         if (itemToDelete !== null) {
             removeFromGrails(itemToDelete);
-            showToast('REMOVED FROM GRAILS', 'success');
+            showToast(t('toast.removed_from_grails'), 'success');
             setItemToDelete(null);
         }
     };
@@ -130,7 +131,7 @@ export default function Dashboard() {
                                             </div>
                                             <div className="flex flex-col">
                                                 <span className="text-[12px] font-medium text-mute uppercase tracking-widest">Total</span>
-                                                <span className="text-[14px] font-bold text-ink uppercase">${order.total.toFixed(2)}</span>
+                                                <span className="text-[14px] font-bold text-ink uppercase">{formatPrice(order.total)}</span>
                                             </div>
                                         </div>
 
@@ -187,7 +188,7 @@ export default function Dashboard() {
                                         </div>
                                         <div className="p-3">
                                             <h3 className="text-[14px] font-medium text-ink uppercase">{item.name}</h3>
-                                            <p className="text-[14px] font-medium text-mute">${item.price}</p>
+                                            <p className="text-[14px] font-medium text-mute">{formatPrice(item.price)}</p>
                                         </div>
                                     </div>
                                 ))}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getCart, getCartTotal, placeOrder, getSession } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
 import NoCapLayout from '@/layouts/nocap-layout';
+import { t, formatPrice } from '@/lib/i18n';
 
 export default function Checkout() {
     const { showToast } = useToast();
@@ -20,34 +21,34 @@ export default function Checkout() {
         if (typeof window === 'undefined') return;
 
         if (!getSession()) {
-            showToast('LOGIN REQUIRED TO COMPLETE ORDER. [ LOGIN HERE ]', 'error');
+            showToast(t('toast.login_required_order'), 'error');
             return;
         }
 
         if (cart.length === 0) {
-            showToast('YOUR CART IS EMPTY', 'error');
+            showToast(t('toast.cart_empty'), 'error');
             return;
         }
 
         placeOrder(cart, total);
-        showToast('ORDER PLACED SUCCESSFULLY. THANK YOU.', 'success');
+        showToast(t('toast.order_success'), 'success');
         
         window.location.href = '/dashboard';
     };
 
     return (
-        <NoCapLayout title="CHECKOUT">
+        <NoCapLayout title={t('checkout.title')}>
             <div className="flex flex-col lg:flex-row w-full min-h-[calc(100vh-80px)]">
                 {/* LEFT COL: SHIPPING FORM */}
                 <div className="w-full lg:w-1/2 p-6 md:p-12 lg:p-24 bg-canvas border-r border-hairline flex flex-col justify-center">
                     <h1 className="text-[32px] font-medium uppercase tracking-widest text-ink mb-12 leading-none">
-                        Checkout
+                        {t('checkout.title')}
                     </h1>
 
                     <form onSubmit={handlePlaceOrder} className="flex flex-col gap-8 w-full max-w-xl">
                         <section className="flex flex-col gap-4">
                             <h2 className="text-[16px] font-bold uppercase tracking-widest text-ink border-b border-hairline pb-2">
-                                Contact Information
+                                {t('checkout.contact_info')}
                             </h2>
                             <div className="flex flex-col gap-2">
                                 <label className="text-[12px] font-bold uppercase tracking-widest text-ink">Email</label>
@@ -62,11 +63,11 @@ export default function Checkout() {
 
                         <section className="flex flex-col gap-4">
                             <h2 className="text-[16px] font-bold uppercase tracking-widest text-ink border-b border-hairline pb-2">
-                                Shipping Address
+                                {t('checkout.shipping_address')}
                             </h2>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[12px] font-bold uppercase tracking-widest text-ink">First Name</label>
+                                    <label className="text-[12px] font-bold uppercase tracking-widest text-ink">{t('checkout.first_name')}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -75,7 +76,7 @@ export default function Checkout() {
                                     />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[12px] font-bold uppercase tracking-widest text-ink">Last Name</label>
+                                    <label className="text-[12px] font-bold uppercase tracking-widest text-ink">{t('checkout.last_name')}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -85,7 +86,7 @@ export default function Checkout() {
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">
-                                <label className="text-[12px] font-bold uppercase tracking-widest text-ink">Address</label>
+                                <label className="text-[12px] font-bold uppercase tracking-widest text-ink">{t('checkout.address')}</label>
                                 <input 
                                     type="text" 
                                     required 
@@ -95,7 +96,7 @@ export default function Checkout() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[12px] font-bold uppercase tracking-widest text-ink">City</label>
+                                    <label className="text-[12px] font-bold uppercase tracking-widest text-ink">{t('checkout.city')}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -104,7 +105,7 @@ export default function Checkout() {
                                     />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[12px] font-bold uppercase tracking-widest text-ink">Postal Code</label>
+                                    <label className="text-[12px] font-bold uppercase tracking-widest text-ink">{t('checkout.postal_code')}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -119,7 +120,7 @@ export default function Checkout() {
                             type="submit"
                             className="mt-8 h-16 w-full bg-ink text-canvas font-bold uppercase tracking-widest rounded-none transition-transform active:scale-[0.98] hover:bg-ink/90 flex items-center justify-center"
                         >
-                            Place Order
+                            {t('action.place_order')}
                         </button>
                     </form>
                 </div>
@@ -128,12 +129,12 @@ export default function Checkout() {
                 <div className="w-full lg:w-1/2 p-6 md:p-12 lg:p-24 bg-soft-cloud flex flex-col justify-start relative">
                     <div className="sticky top-24 flex flex-col gap-8 w-full max-w-xl mx-auto lg:mx-0">
                         <h2 className="text-[16px] font-bold uppercase tracking-widest text-ink border-b border-hairline pb-2">
-                            Order Summary
+                            {t('checkout.order_summary')}
                         </h2>
 
                         <div className="flex flex-col gap-6">
                             {cart.length === 0 ? (
-                                <p className="text-[14px] uppercase font-medium text-mute">Your cart is empty.</p>
+                                <p className="text-[14px] uppercase font-medium text-mute">{t('cart.empty')}</p>
                             ) : (
                                 cart.map((item) => (
                                     <div key={`${item.id}-${item.size}`} className="flex gap-4 items-center border border-hairline bg-canvas p-4">
@@ -145,9 +146,9 @@ export default function Checkout() {
                                         </div>
                                         <div className="flex flex-col flex-1">
                                             <h3 className="text-[14px] font-medium uppercase text-ink leading-tight">{item.name}</h3>
-                                            <p className="text-[12px] text-mute uppercase mt-1">Size: {item.size}</p>
+                                            <p className="text-[12px] text-mute uppercase mt-1">{t('action.size')}: {item.size}</p>
                                         </div>
-                                        <p className="text-[14px] font-medium text-ink">${(item.price * item.quantity).toFixed(2)}</p>
+                                        <p className="text-[14px] font-medium text-ink">{formatPrice(item.price * item.quantity)}</p>
                                     </div>
                                 ))
                             )}
@@ -155,16 +156,16 @@ export default function Checkout() {
 
                         <div className="flex flex-col gap-4 border-t border-hairline pt-6">
                             <div className="flex justify-between text-[14px] font-medium uppercase text-mute">
-                                <span>Subtotal</span>
-                                <span>${total.toFixed(2)}</span>
+                                <span>{t('cart.subtotal')}</span>
+                                <span>{formatPrice(total)}</span>
                             </div>
                             <div className="flex justify-between text-[14px] font-medium uppercase text-mute">
-                                <span>Shipping</span>
-                                <span>Calculated at next step</span>
+                                <span>{t('checkout.shipping')}</span>
+                                <span>{t('checkout.shipping_next_step')}</span>
                             </div>
                             <div className="flex justify-between text-[16px] font-bold uppercase text-ink pt-4 border-t border-hairline">
-                                <span>Total</span>
-                                <span>${total.toFixed(2)}</span>
+                                <span>{t('cart.total')}</span>
+                                <span>{formatPrice(total)}</span>
                             </div>
                         </div>
                     </div>

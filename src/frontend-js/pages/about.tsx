@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import NoCapLayout from '@/layouts/nocap-layout';
+import { t } from '@/lib/i18n';
 
 export default function About() {
     return (
@@ -14,29 +15,29 @@ export default function About() {
                         EST 2026 05 05
                     </p>
                     <p className="text-[16px] text-mute max-w-xl leading-relaxed">
-                        Born from the streets of Condong Catur, Sleman. No Cap is more than a brand; it's a movement. We reject the superfluous and embrace the essential. Inspired by brutalist architecture and functional utility, our garments are engineered for those who speak less and do more.
+                        {t('about.desc_full')}
                     </p>
                 </div>
                 <div className="flex-1 bg-ink text-canvas p-8 md:p-16 flex flex-col justify-center">
                     <h2 className="text-[32px] md:text-[48px] font-bold uppercase leading-none tracking-tight mb-8">
-                        THE PHILOSOPHY
+                        {t('philosophy.title')}
                     </h2>
                     <ul className="flex flex-col gap-6 text-[14px] font-medium uppercase tracking-widest">
                         <li className="flex gap-4">
                             <span className="text-mute">01.</span>
-                            <span>Form Follows Function</span>
+                            <span>{t('philosophy.p1')}</span>
                         </li>
                         <li className="flex gap-4">
                             <span className="text-mute">02.</span>
-                            <span>Ink & Canvas Aesthetics</span>
+                            <span>{t('philosophy.p2')}</span>
                         </li>
                         <li className="flex gap-4">
                             <span className="text-mute">03.</span>
-                            <span>Uncompromising Quality</span>
+                            <span>{t('philosophy.p3')}</span>
                         </li>
                         <li className="flex gap-4">
                             <span className="text-mute">04.</span>
-                            <span>Zero Bullshit. No Cap.</span>
+                            <span>{t('philosophy.p4')}</span>
                         </li>
                     </ul>
                 </div>

@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
 import { loginUser } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
+import { t } from '@/lib/i18n';
 
 export default function Login() {
     const { showToast } = useToast();
@@ -18,15 +19,15 @@ export default function Login() {
         const result = loginUser(email, password);
 
         if (result.success) {
-            showToast('LOGIN SUCCESSFUL', 'success');
+            showToast(t('toast.login_success'), 'success');
             setTimeout(() => {
                 if (typeof window !== 'undefined') {
                     window.location.href = '/dashboard';
                 }
             }, 500);
         } else {
-            setError(result.error || 'LOGIN FAILED');
-            showToast(result.error || 'LOGIN FAILED', 'error');
+            setError(result.error || t('toast.login_failed'));
+            showToast(result.error || t('toast.login_failed'), 'error');
             setProcessing(false);
         }
     };

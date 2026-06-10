@@ -4,6 +4,7 @@ import { useState } from 'react';
 import NoCapLayout from '@/layouts/nocap-layout';
 import { addToCart, addToGrails, isInGrails, getSession } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
+import { t, formatPrice } from '@/lib/i18n';
 
 export default function Product() {
     const { showToast } = useToast();
@@ -14,7 +15,7 @@ export default function Product() {
         id: 101,
         name: "AIR MAX 95 OG",
         category: "SHOES",
-        price: 220,
+        price: 50,
         description: "Taking inspiration from the human body and '90s track aesthetics, the Air Max 95 mixes unbelievable comfort with head-turning style. The iconic side panels represent strength, while visible Air in the heel and forefoot cushions every step.",
     };
 
@@ -29,7 +30,7 @@ export default function Product() {
 
     const handleAddToCart = () => {
         if (!selectedSize) {
-            showToast('PLEASE SELECT A SIZE', 'error');
+            showToast(t('toast.please_select_size'), 'error');
             return;
         }
 
@@ -41,19 +42,19 @@ export default function Product() {
             image: images[0],
         });
 
-        showToast('PRODUCT SUCCESSFULLY ADDED TO BAG', 'success');
+        showToast(t('toast.add_to_bag_success'), 'success');
     };
 
     const handleFavorite = () => {
         if (typeof window !== 'undefined') {
             if (!getSession()) {
-                showToast('LOGIN REQUIRED TO SAVE GRAILS. [ LOGIN HERE ]', 'error');
+                showToast(t('toast.login_required_grails'), 'error');
                 return;
             }
         }
 
         if (isInGrails(product.id)) {
-            showToast('ALREADY IN YOUR GRAILS', 'error');
+            showToast(t('toast.already_in_grails'), 'error');
             return;
         }
 
@@ -65,7 +66,7 @@ export default function Product() {
             category: product.category,
         });
 
-        showToast('ADDED TO GRAILS', 'success');
+        showToast(t('toast.added_to_grails'), 'success');
     };
 
     return (
@@ -109,13 +110,13 @@ export default function Product() {
                         <div className="flex flex-col gap-1 mb-8">
                             <h2 className="text-[14px] font-medium text-mute uppercase">Men's Lifestyle Shoes</h2>
                             <h1 className="text-[32px] font-medium uppercase leading-tight text-ink mb-2">{product.name}</h1>
-                            <p className="text-[24px] font-medium text-ink">${product.price}</p>
+                            <p className="text-[24px] font-medium text-ink">{formatPrice(product.price)}</p>
                         </div>
 
                         <div className="mb-8">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-[16px] font-medium text-ink">Select Size</h3>
-                                <Link href="#" className="text-[16px] font-medium text-mute underline hover:text-ink">Size Guide</Link>
+                                <h3 className="text-[16px] font-medium text-ink">{t('product.select_size')}</h3>
+                                <Link href="#" className="text-[16px] font-medium text-mute underline hover:text-ink">{t('product.size_guide')}</Link>
                             </div>
                             <div className="grid grid-cols-3 gap-2">
                                 {sizes.map(size => (
@@ -139,13 +140,13 @@ export default function Product() {
                                 onClick={handleAddToCart}
                                 className="flex h-16 w-full items-center justify-center rounded-none bg-ink text-[16px] font-medium text-canvas transition-transform active:scale-[0.98] hover:bg-ink/90"
                             >
-                                Add to Bag
+                                {t('action.add_to_bag')}
                             </button>
                             <button 
                                 onClick={handleFavorite}
                                 className="flex h-16 w-full items-center justify-center rounded-none bg-soft-cloud text-[16px] font-medium text-ink transition-transform active:scale-[0.98] hover:bg-hairline/50 gap-2"
                             >
-                                Favorite <Heart className="w-5 h-5" />
+                                {t('product.favorite')} <Heart className="w-5 h-5" />
                             </button>
                         </div>
 

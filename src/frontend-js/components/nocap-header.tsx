@@ -6,6 +6,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { getCart, getCartCount, getCartTotal, removeFromCart, updateCartQuantity, getSession, getCurrentUser, EVENTS } from '@/lib/storage';
 import { useToast } from '@/components/toast-provider';
 import ConfirmationModal from '@/components/confirmation-modal';
+import { t, formatPrice, setLang } from '@/lib/i18n';
+import 'flag-icons/css/flag-icons.min.css';
 
 // ═══════════════════════════════════════════════════
 // CART SHEET — reads from localStorage reactively
@@ -40,7 +42,7 @@ function CartSheet({ trigger }: CartSheetProps) {
     const confirmRemove = () => {
         if (itemToDelete) {
             removeFromCart(itemToDelete.id, itemToDelete.size);
-            showToast('ITEM REMOVED FROM CART', 'success');
+            showToast(t('toast.item_removed'), 'success');
             setItemToDelete(null);
         }
     };
@@ -54,15 +56,14 @@ function CartSheet({ trigger }: CartSheetProps) {
             <SheetTrigger asChild>{trigger}</SheetTrigger>
             <SheetContent side="right" className="w-full sm:max-w-md border-l border-hairline bg-canvas p-0 flex flex-col">
                 <SheetHeader className="p-6 border-b border-hairline flex flex-row items-center justify-between space-y-0">
-                    <SheetTitle className="text-[20px] font-medium uppercase tracking-widest text-ink">Your Cart</SheetTitle>
+                    <SheetTitle className="text-[20px] font-medium uppercase tracking-widest text-ink">{t('nav.cart')}</SheetTitle>
                 </SheetHeader>
                 
                 <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8">
                     {cart.length === 0 ? (
                         <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
                             <ShoppingCart className="w-12 h-12 text-mute mb-4" />
-                            <p className="text-[16px] font-medium text-ink uppercase tracking-widest">Cart is Empty</p>
-                            <p className="text-[14px] text-mute mt-2">Add some gear to get started.</p>
+                            <p className="text-[16px] font-medium text-ink uppercase tracking-widest">{t('cart.empty')}</p>
                         </div>
                     ) : (
                         cart.map((item) => (
@@ -81,7 +82,7 @@ function CartSheet({ trigger }: CartSheetProps) {
                                                 <X className="w-4 h-4" />
                                             </button>
                                         </div>
-                                        <p className="text-[12px] text-mute uppercase mt-1">Size: {item.size}</p>
+                                        <p className="text-[12px] text-mute uppercase mt-1">{t('action.size')}: {item.size}</p>
                                     </div>
                                     <div className="flex justify-between items-end">
                                         <div className="flex items-center gap-4 border border-hairline px-2 py-1">
@@ -99,7 +100,7 @@ function CartSheet({ trigger }: CartSheetProps) {
                                                 <Plus className="w-3 h-3" />
                                             </button>
                                         </div>
-                                        <p className="text-[14px] font-medium text-ink">${(item.price * item.quantity).toFixed(2)}</p>
+                                        <p className="text-[14px] font-medium text-ink">{formatPrice(item.price * item.quantity)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -110,12 +111,12 @@ function CartSheet({ trigger }: CartSheetProps) {
                 {cart.length > 0 && (
                     <div className="p-6 border-t border-hairline bg-soft-cloud flex flex-col gap-4">
                         <div className="flex justify-between items-center text-[16px] font-medium uppercase text-ink">
-                            <span>Subtotal</span>
-                            <span>${total.toFixed(2)}</span>
+                            <span>{t('cart.subtotal')}</span>
+                            <span>{formatPrice(total)}</span>
                         </div>
-                        <p className="text-[12px] text-mute uppercase">Shipping and taxes calculated at checkout.</p>
+                        <p className="text-[12px] text-mute uppercase">{t('cart.shipping_calc')}</p>
                         <a href="/checkout" className="flex items-center justify-center w-full bg-ink text-canvas hover:bg-ink/90 font-bold uppercase tracking-widest rounded-none h-14 mt-2 transition-transform active:scale-[0.98]">
-                            Checkout
+                            {t('action.checkout')}
                         </a>
                     </div>
                 )}
@@ -162,11 +163,11 @@ export default function NoCapHeader() {
     }, []);
 
     const navItems = [
-        { label: 'Home', href: '/' },
-        { label: 'Shop', href: '/drops' },
-        { label: 'About', href: '/about' },
-        { label: 'Contact', href: '/contact' },
-        { label: 'Store', href: '/store' },
+        { label: t('nav.home'), href: '/' },
+        { label: t('nav.shop'), href: '/drops' },
+        { label: t('nav.about'), href: '/about' },
+        { label: t('nav.contact'), href: '/contact' },
+        { label: t('nav.store'), href: '/store' },
     ];
 
     const [isHidden, setIsHidden] = useState(false);
@@ -193,6 +194,13 @@ export default function NoCapHeader() {
 
     const accountHref = isLoggedIn ? '/dashboard' : '/auth/login';
     const accountLabel = isLoggedIn ? 'Account' : 'Login';
+
+    const handleLangChange = (newLang: string) => {
+        setLang(newLang);
+        if (typeof window !== 'undefined') {
+            window.location.reload();
+        }
+    };
 
     return (
         <header className={`sticky top-0 z-50 flex h-20 items-center justify-between border-b border-hairline bg-canvas px-6 md:px-12 shrink-0 transition-transform duration-500 ease-out ${isHidden ? '-translate-y-full' : 'translate-y-0'}`}>
@@ -223,6 +231,30 @@ export default function NoCapHeader() {
                             {item.label}
                         </Link>
                     ))}
+
+                    {/* LANGUAGE DROPDOWN */}
+                    <div className="group relative flex h-full items-center cursor-pointer">
+                        <span className="relative inline-block after:absolute after:-bottom-1 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:origin-bottom-left hover:after:scale-x-100 transition-colors">
+                            LANGUAGE
+                        </span>
+                        
+                        <div className="absolute top-full left-0 z-50 pt-2 origin-top scale-y-0 transition-transform duration-200 group-hover:scale-y-100 w-full">
+                            <div className="flex flex-col bg-canvas border border-ink p-1 w-full rounded-none shadow-sm">
+                                <button 
+                                    onClick={() => handleLangChange('en')}
+                                    className="text-left px-2 py-1.5 text-[12px] font-bold text-ink hover:bg-ink hover:text-canvas transition-colors flex items-center justify-center gap-2"
+                                >
+                                     <span className="fi fi-us"></span> EN
+                                </button>
+                                <button 
+                                    onClick={() => handleLangChange('id')}
+                                    className="text-left px-2 py-1.5 text-[12px] font-bold text-ink hover:bg-ink hover:text-canvas transition-colors flex items-center justify-center gap-2"
+                                >
+                                     <span className="fi fi-id"></span> ID
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
 
                 {/* VERTICAL SEPARATOR */}
