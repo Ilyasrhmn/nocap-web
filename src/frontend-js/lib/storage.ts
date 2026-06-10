@@ -14,6 +14,7 @@ const KEYS = {
   USERS: 'nocap_users',
   SESSION: 'nocap_session',
   GRAILS: 'nocap_grails',
+  ORDERS: 'nocap_orders',
 } as const;
 
 // ── Events ──────────────────────────────────────────
@@ -21,6 +22,7 @@ const EVENTS = {
   CART_UPDATED: 'nocap:cart-updated',
   AUTH_UPDATED: 'nocap:auth-updated',
   GRAILS_UPDATED: 'nocap:grails-updated',
+  ORDERS_UPDATED: 'nocap:orders-updated',
 } as const;
 
 export { EVENTS };
@@ -251,4 +253,64 @@ export function removeFromGrails(productId: number | string): void {
 
 export function isInGrails(productId: number | string): boolean {
   return getGrails().some((g) => g.id === productId);
+}
+
+// ══════════════════════════════════════════════════════
+// ORDERS — scoped per user
+// ══════════════════════════════════════════════════════
+
+export type OrderStatus = 'PROCESSING' | 'SHIPPED' | 'DELIVERED';
+
+export type Order = {
+  orderId: string;
+  date: string;
+  total: number;
+  status: OrderStatus;
+  items: CartItem[];
+};
+
+type OrdersStore = Record<string, Order[]>;
+
+function getOrdersStore(): OrdersStore {
+  return getItem<OrdersStore>(KEYS.ORDERS, {});
+}
+
+export function getOrders(): Order[] {
+  const session = getSession();
+  if (!session) return [];
+  const store = getOrdersStore();
+  return store[session] || [];
+}
+
+export function placeOrder(cartItems: CartItem[], total: number): void {
+  const session = getSession();
+  if (!session) return;
+
+  const store = getOrdersStore();
+  const userOrders = store[session] || [];
+
+  // Generate random order ID and random status for demo purposes
+  const orderId = `#NC-${Math.floor(100 + Math.random() * 900)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(10 + Math.random() * 90)}`;
+  
+  const statuses: OrderStatus[] = ['PROCESSING', 'SHIPPED', 'DELIVERED'];
+  const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+
+  const newOrder: Order = {
+    orderId,
+    date: new Date().toISOString(),
+    total,
+    status: randomStatus, // Using random status for demo variation
+    items: cartItems,
+  };
+
+  userOrders.unshift(newOrder); // add to top
+  store[session] = userOrders;
+  
+  setItem(KEYS.ORDERS, store);
+  
+  // Clear cart
+  setItem(KEYS.CART, []);
+  
+  dispatch(EVENTS.ORDERS_UPDATED);
+  dispatch(EVENTS.CART_UPDATED);
 }

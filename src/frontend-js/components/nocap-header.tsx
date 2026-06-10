@@ -114,9 +114,9 @@ function CartSheet({ trigger }: CartSheetProps) {
                             <span>${total.toFixed(2)}</span>
                         </div>
                         <p className="text-[12px] text-mute uppercase">Shipping and taxes calculated at checkout.</p>
-                        <button className="w-full bg-ink text-canvas hover:bg-ink/90 font-bold uppercase tracking-widest rounded-none h-14 mt-2 transition-transform active:scale-[0.98]">
+                        <a href="/checkout" className="flex items-center justify-center w-full bg-ink text-canvas hover:bg-ink/90 font-bold uppercase tracking-widest rounded-none h-14 mt-2 transition-transform active:scale-[0.98]">
                             Checkout
-                        </button>
+                        </a>
                     </div>
                 )}
 

@@ -192,7 +192,7 @@ export default function Welcome({
                                             <img 
                                                 src={cat.image} 
                                                 alt={cat.title} 
-                                                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" 
+                                                className="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:scale-105 group-hover:grayscale-0" 
                                             />
                                             <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10"></div>
                                         </div>
@@ -209,16 +209,16 @@ export default function Welcome({
                     {/* MEMBER BENEFIT TILE */}
                     <ScrollReveal>
                         <section className="px-6 py-12 md:px-12">
-                             <div className="relative flex min-h-[60vh] w-full flex-col justify-end bg-ink bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1617387304192-35368a157140?q=80&w=2000&auto=format&fit=crop")' }}>
-                                <div className="absolute inset-0 bg-black/60"></div>
+                             <div className="relative flex min-h-[60vh] w-full flex-col justify-end bg-ink bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=2000&auto=format&fit=crop")' }}>
+                                <div className="absolute inset-0 bg-black/40"></div>
                                 <div className="relative z-10 flex flex-col items-center text-center p-6 md:p-12">
                                     <h2 className="mb-6 max-w-3xl text-[48px] font-medium uppercase leading-[0.9] text-white md:text-[64px]">Become A Member</h2>
                                     <p className="mb-8 max-w-md text-[16px] text-white/90">Sign up for free. Join the community. Never miss a drop.</p>
                                     <div className="flex flex-col gap-4 sm:flex-row">
-                                        <Link href={register()} className="flex h-12 items-center justify-center rounded-full bg-white px-8 text-[16px] font-medium text-black transition-transform hover:scale-95">
+                                        <Link href={register()} className="flex h-12 items-center justify-center rounded-none bg-white/80 backdrop-blur-sm px-8 text-[16px] font-medium text-black transition-transform hover:scale-95">
                                             Join Us
                                         </Link>
-                                        <Link href={login()} className="flex h-12 items-center justify-center rounded-full bg-transparent border border-white px-8 text-[16px] font-medium text-white transition-transform hover:scale-95 hover:bg-white hover:text-black">
+                                        <Link href={login()} className="flex h-12 items-center justify-center rounded-none bg-transparent border border-white/80 px-8 text-[16px] font-medium text-white transition-transform hover:scale-95 hover:bg-white/80 hover:text-black">
                                             Sign In
                                         </Link>
                                     </div>
