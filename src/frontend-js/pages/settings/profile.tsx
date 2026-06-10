@@ -51,7 +51,7 @@ export default function Profile({
                                             <Input
                                                 id="name"
                                                 name="name"
-                                                defaultValue={auth.user.name}
+                                                defaultValue={auth.user?.name || ''}
                                                 required
                                                 autoComplete="name"
                                                 placeholder="FULL NAME"
@@ -66,7 +66,7 @@ export default function Profile({
                                                 id="email"
                                                 type="email"
                                                 name="email"
-                                                defaultValue={auth.user.email}
+                                                defaultValue={auth.user?.email || ''}
                                                 required
                                                 autoComplete="username"
                                                 placeholder="EMAIL ADDRESS"
@@ -75,7 +75,7 @@ export default function Profile({
                                             <InputError message={errors.email} />
                                         </div>
 
-                                        {mustVerifyEmail && auth.user.email_verified_at === null && (
+                                        {mustVerifyEmail && auth.user?.email_verified_at === null && (
                                             <div className="bg-soft-cloud p-4 border border-hairline">
                                                 <p className="text-[14px] text-ink font-medium">
                                                     Your email address is unverified.{' '}

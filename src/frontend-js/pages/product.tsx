@@ -2,10 +2,21 @@ import { Head, Link } from '@inertiajs/react';
 import { ChevronDown, Heart } from 'lucide-react';
 import { useState } from 'react';
 import NoCapLayout from '@/layouts/nocap-layout';
+import { addToCart, addToGrails, isInGrails, getSession } from '@/lib/storage';
+import { useToast } from '@/components/toast-provider';
 
-export default function Product({ canRegister = true }: { canRegister?: boolean }) {
+export default function Product() {
+    const { showToast } = useToast();
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const [activeImage, setActiveImage] = useState(0);
+
+    const product = {
+        id: 101,
+        name: "AIR MAX 95 OG",
+        category: "SHOES",
+        price: 220,
+        description: "Taking inspiration from the human body and '90s track aesthetics, the Air Max 95 mixes unbelievable comfort with head-turning style. The iconic side panels represent strength, while visible Air in the heel and forefoot cushions every step.",
+    };
 
     const images = [
         "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1200&auto=format&fit=crop",
@@ -15,6 +26,47 @@ export default function Product({ canRegister = true }: { canRegister?: boolean 
     ];
 
     const sizes = ["US 7", "US 7.5", "US 8", "US 8.5", "US 9", "US 9.5", "US 10", "US 10.5", "US 11", "US 11.5", "US 12", "US 13"];
+
+    const handleAddToCart = () => {
+        if (!selectedSize) {
+            showToast('PLEASE SELECT A SIZE', 'error');
+            return;
+        }
+
+        addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            size: selectedSize,
+            image: images[0],
+        });
+
+        showToast('PRODUCT SUCCESSFULLY ADDED TO BAG', 'success');
+    };
+
+    const handleFavorite = () => {
+        if (typeof window !== 'undefined') {
+            if (!getSession()) {
+                showToast('LOGIN REQUIRED TO SAVE GRAILS. [ LOGIN HERE ]', 'error');
+                return;
+            }
+        }
+
+        if (isInGrails(product.id)) {
+            showToast('ALREADY IN YOUR GRAILS', 'error');
+            return;
+        }
+
+        addToGrails({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: images[0],
+            category: product.category,
+        });
+
+        showToast('ADDED TO GRAILS', 'success');
+    };
 
     return (
         <NoCapLayout title="AIR MAX 95 OG">
@@ -56,8 +108,8 @@ export default function Product({ canRegister = true }: { canRegister?: boolean 
                     <div className="flex w-full md:w-[35%] flex-col">
                         <div className="flex flex-col gap-1 mb-8">
                             <h2 className="text-[14px] font-medium text-mute uppercase">Men's Lifestyle Shoes</h2>
-                            <h1 className="text-[32px] font-medium uppercase leading-tight text-ink mb-2">AIR MAX 95 OG</h1>
-                            <p className="text-[24px] font-medium text-ink">$220</p>
+                            <h1 className="text-[32px] font-medium uppercase leading-tight text-ink mb-2">{product.name}</h1>
+                            <p className="text-[24px] font-medium text-ink">${product.price}</p>
                         </div>
 
                         <div className="mb-8">
@@ -83,16 +135,22 @@ export default function Product({ canRegister = true }: { canRegister?: boolean 
                         </div>
 
                         <div className="flex flex-col gap-3 mb-12">
-                            <button className="flex h-16 w-full items-center justify-center rounded-full bg-ink text-[16px] font-medium text-canvas transition-transform active:scale-[0.98] hover:bg-black/90">
+                            <button 
+                                onClick={handleAddToCart}
+                                className="flex h-16 w-full items-center justify-center rounded-none bg-ink text-[16px] font-medium text-canvas transition-transform active:scale-[0.98] hover:bg-ink/90"
+                            >
                                 Add to Bag
                             </button>
-                            <button className="flex h-16 w-full items-center justify-center rounded-full bg-soft-cloud text-[16px] font-medium text-ink transition-transform active:scale-[0.98] hover:bg-hairline/50 gap-2">
+                            <button 
+                                onClick={handleFavorite}
+                                className="flex h-16 w-full items-center justify-center rounded-none bg-soft-cloud text-[16px] font-medium text-ink transition-transform active:scale-[0.98] hover:bg-hairline/50 gap-2"
+                            >
                                 Favorite <Heart className="w-5 h-5" />
                             </button>
                         </div>
 
                         <p className="text-[16px] font-medium text-ink mb-8 leading-relaxed">
-                            Taking inspiration from the human body and '90s track aesthetics, the Air Max 95 mixes unbelievable comfort with head-turning style. The iconic side panels represent strength, while visible Air in the heel and forefoot cushions every step.
+                            {product.description}
                         </p>
 
                         <div className="flex flex-col border-t border-hairline pt-6 mb-6">

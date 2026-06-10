@@ -1,4 +1,5 @@
 import React from 'react';
+import { getCurrentUser } from '@/lib/storage';
 
 export const Head = ({ title }: { title?: string }) => {
     if (typeof document !== 'undefined' && title) {
@@ -7,31 +8,35 @@ export const Head = ({ title }: { title?: string }) => {
     return null;
 };
 
-export const Link = React.forwardRef(({ href, children, className, preserveScroll, preserveState, ...props }: any, ref) => {
-    // Basic a tag wrapper for inertia Link
+export const Link = React.forwardRef(({ href, children, className, preserveScroll, preserveState, method, as, ...props }: any, ref) => {
     let actualHref = href;
     if (typeof href === 'object' && href !== null) {
-        // sometimes route() returns an object in custom setups, but Wayfinder usually returns strings
         actualHref = href.url || '#';
+    }
+    // If rendered as="button", return a button
+    if (as === 'button') {
+        return <button className={className} ref={ref as any} {...props}>{children}</button>;
     }
     return <a href={actualHref} className={className} ref={ref} {...props}>{children}</a>;
 });
 Link.displayName = 'Link';
 
-export const usePage = () => ({
-    props: {
-        auth: { 
-            user: {
-                name: 'Ilyas Nur Rohman',
-                email: 'ilyas@nocap.com',
-                created_at: new Date().toISOString()
-            } 
+export const usePage = () => {
+    // Reactive: read from localStorage when available
+    const user = getCurrentUser();
+    return {
+        props: {
+            auth: {
+                user: user
+                    ? { name: user.name, email: user.email, created_at: user.created_at }
+                    : null,
+            },
+            errors: {},
+            flash: {},
         },
-        errors: {},
-        flash: {}
-    },
-    url: typeof window !== 'undefined' ? window.location.pathname : '/'
-});
+        url: typeof window !== 'undefined' ? window.location.pathname : '/',
+    };
+};
 
 export const useForm = (initialData: any) => {
     const [data, setData] = React.useState(initialData);

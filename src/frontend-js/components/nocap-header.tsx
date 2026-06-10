@@ -1,14 +1,54 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { useAppearance } from '@/hooks/use-appearance';
 import { Menu, Moon, Sun, ShoppingCart, User, X, Plus, Minus } from 'lucide-react';
 import { useState, useEffect, useRef, type ReactElement } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { getCart, getCartCount, getCartTotal, removeFromCart, updateCartQuantity, getSession, getCurrentUser, EVENTS } from '@/lib/storage';
+import { useToast } from '@/components/toast-provider';
+import ConfirmationModal from '@/components/confirmation-modal';
 
+// ═══════════════════════════════════════════════════
+// CART SHEET — reads from localStorage reactively
+// ═══════════════════════════════════════════════════
 type CartSheetProps = {
     trigger: ReactElement;
 };
 
 function CartSheet({ trigger }: CartSheetProps) {
+    const { showToast } = useToast();
+    const [cart, setCart] = useState(getCart());
+    const [total, setTotal] = useState(getCartTotal());
+
+    const [itemToDelete, setItemToDelete] = useState<{id: number | string, size: string} | null>(null);
+
+    // ── Sync on Custom Event ────────────────────────
+    useEffect(() => {
+        const sync = () => {
+            setCart(getCart());
+            setTotal(getCartTotal());
+        };
+        if (typeof window !== 'undefined') {
+            window.addEventListener(EVENTS.CART_UPDATED, sync);
+            return () => window.removeEventListener(EVENTS.CART_UPDATED, sync);
+        }
+    }, []);
+
+    const handleRemoveClick = (id: number | string, size: string) => {
+        setItemToDelete({ id, size });
+    };
+
+    const confirmRemove = () => {
+        if (itemToDelete) {
+            removeFromCart(itemToDelete.id, itemToDelete.size);
+            showToast('ITEM REMOVED FROM CART', 'success');
+            setItemToDelete(null);
+        }
+    };
+
+    const handleQuantity = (id: number | string, size: string, delta: number) => {
+        updateCartQuantity(id, size, delta);
+    };
+
     return (
         <Sheet>
             <SheetTrigger asChild>{trigger}</SheetTrigger>
@@ -18,74 +58,108 @@ function CartSheet({ trigger }: CartSheetProps) {
                 </SheetHeader>
                 
                 <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8">
-                    {/* DEMO CART ITEM 1 */}
-                    <div className="flex gap-4">
-                        <div className="h-24 w-20 shrink-0 bg-soft-cloud">
-                            <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=200&auto=format&fit=crop" alt="Product" className="h-full w-full object-cover" />
+                    {cart.length === 0 ? (
+                        <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
+                            <ShoppingCart className="w-12 h-12 text-mute mb-4" />
+                            <p className="text-[16px] font-medium text-ink uppercase tracking-widest">Cart is Empty</p>
+                            <p className="text-[14px] text-mute mt-2">Add some gear to get started.</p>
                         </div>
-                        <div className="flex flex-col flex-1 justify-between">
-                            <div>
-                                <div className="flex justify-between items-start">
-                                    <h3 className="text-[14px] font-medium uppercase text-ink">NCP Heavyweight Hoodie</h3>
-                                    <button className="text-mute hover:text-ink transition-colors"><X className="w-4 h-4" /></button>
+                    ) : (
+                        cart.map((item) => (
+                            <div key={`${item.id}-${item.size}`} className="flex gap-4">
+                                <div className="h-24 w-20 shrink-0 bg-soft-cloud">
+                                    <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
                                 </div>
-                                <p className="text-[12px] text-mute uppercase mt-1">Size: L / Black</p>
-                            </div>
-                            <div className="flex justify-between items-end">
-                                <div className="flex items-center gap-4 border border-hairline px-2 py-1">
-                                    <button className="text-mute hover:text-ink"><Minus className="w-3 h-3" /></button>
-                                    <span className="text-[14px] font-medium text-ink">1</span>
-                                    <button className="text-mute hover:text-ink"><Plus className="w-3 h-3" /></button>
+                                <div className="flex flex-col flex-1 justify-between">
+                                    <div>
+                                        <div className="flex justify-between items-start">
+                                            <h3 className="text-[14px] font-medium uppercase text-ink">{item.name}</h3>
+                                            <button 
+                                                onClick={() => handleRemoveClick(item.id, item.size)}
+                                                className="text-mute hover:text-ink transition-colors"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                        <p className="text-[12px] text-mute uppercase mt-1">Size: {item.size}</p>
+                                    </div>
+                                    <div className="flex justify-between items-end">
+                                        <div className="flex items-center gap-4 border border-hairline px-2 py-1">
+                                            <button 
+                                                onClick={() => handleQuantity(item.id, item.size, -1)}
+                                                className="text-mute hover:text-ink"
+                                            >
+                                                <Minus className="w-3 h-3" />
+                                            </button>
+                                            <span className="text-[14px] font-medium text-ink">{item.quantity}</span>
+                                            <button 
+                                                onClick={() => handleQuantity(item.id, item.size, 1)}
+                                                className="text-mute hover:text-ink"
+                                            >
+                                                <Plus className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                        <p className="text-[14px] font-medium text-ink">${(item.price * item.quantity).toFixed(2)}</p>
+                                    </div>
                                 </div>
-                                <p className="text-[14px] font-medium text-ink">$120.00</p>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* DEMO CART ITEM 2 */}
-                    <div className="flex gap-4">
-                        <div className="h-24 w-20 shrink-0 bg-soft-cloud">
-                            <img src="https://images.unsplash.com/photo-1517438476312-10d79c077509?q=80&w=200&auto=format&fit=crop" alt="Product" className="h-full w-full object-cover" />
-                        </div>
-                        <div className="flex flex-col flex-1 justify-between">
-                            <div>
-                                <div className="flex justify-between items-start">
-                                    <h3 className="text-[14px] font-medium uppercase text-ink">NCP Tech Cargo</h3>
-                                    <button className="text-mute hover:text-ink transition-colors"><X className="w-4 h-4" /></button>
-                                </div>
-                                <p className="text-[12px] text-mute uppercase mt-1">Size: M / Olive</p>
-                            </div>
-                            <div className="flex justify-between items-end">
-                                <div className="flex items-center gap-4 border border-hairline px-2 py-1">
-                                    <button className="text-mute hover:text-ink"><Minus className="w-3 h-3" /></button>
-                                    <span className="text-[14px] font-medium text-ink">1</span>
-                                    <button className="text-mute hover:text-ink"><Plus className="w-3 h-3" /></button>
-                                </div>
-                                <p className="text-[14px] font-medium text-ink">$145.00</p>
-                            </div>
-                        </div>
-                    </div>
+                        ))
+                    )}
                 </div>
 
-                <div className="p-6 border-t border-hairline bg-soft-cloud flex flex-col gap-4">
-                    <div className="flex justify-between items-center text-[16px] font-medium uppercase text-ink">
-                        <span>Subtotal</span>
-                        <span>$265.00</span>
+                {cart.length > 0 && (
+                    <div className="p-6 border-t border-hairline bg-soft-cloud flex flex-col gap-4">
+                        <div className="flex justify-between items-center text-[16px] font-medium uppercase text-ink">
+                            <span>Subtotal</span>
+                            <span>${total.toFixed(2)}</span>
+                        </div>
+                        <p className="text-[12px] text-mute uppercase">Shipping and taxes calculated at checkout.</p>
+                        <button className="w-full bg-ink text-canvas hover:bg-ink/90 font-bold uppercase tracking-widest rounded-none h-14 mt-2 transition-transform active:scale-[0.98]">
+                            Checkout
+                        </button>
                     </div>
-                    <p className="text-[12px] text-mute uppercase">Shipping and taxes calculated at checkout.</p>
-                    <button className="w-full bg-ink text-canvas hover:bg-ink/90 font-bold uppercase tracking-widest rounded-none h-14 mt-2 transition-transform active:scale-[0.98]">
-                        Checkout
-                    </button>
-                </div>
+                )}
+
+                <ConfirmationModal 
+                    isOpen={!!itemToDelete}
+                    onClose={() => setItemToDelete(null)}
+                    onConfirm={confirmRemove}
+                />
             </SheetContent>
         </Sheet>
     );
 }
 
+// ═══════════════════════════════════════════════════
+// MAIN HEADER
+// ═══════════════════════════════════════════════════
 export default function NoCapHeader() {
-    const { auth } = usePage().props;
     const { updateAppearance, resolvedAppearance } = useAppearance();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    // ── Hydrate on mount + listen for cart events ───
+    useEffect(() => {
+        const syncCart = () => setCartCount(getCartCount());
+        syncCart(); // initial hydration
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener(EVENTS.CART_UPDATED, syncCart);
+            return () => window.removeEventListener(EVENTS.CART_UPDATED, syncCart);
+        }
+    }, []);
+
+    // ── Hydrate on mount + listen for auth events ───
+    useEffect(() => {
+        const syncAuth = () => setIsLoggedIn(!!getSession());
+        syncAuth(); // initial hydration
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener(EVENTS.AUTH_UPDATED, syncAuth);
+            return () => window.removeEventListener(EVENTS.AUTH_UPDATED, syncAuth);
+        }
+    }, []);
 
     const navItems = [
         { label: 'Home', href: '/' },
@@ -101,15 +175,11 @@ export default function NoCapHeader() {
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            
-            // If scrolling down and we have scrolled past the header height
             if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
                 setIsHidden(true);
             } else if (currentScrollY < lastScrollY.current) {
-                // If scrolling up
                 setIsHidden(false);
             }
-            
             lastScrollY.current = currentScrollY;
         };
 
@@ -121,10 +191,12 @@ export default function NoCapHeader() {
         updateAppearance(resolvedAppearance === 'dark' ? 'light' : 'dark');
     };
 
+    const accountHref = isLoggedIn ? '/dashboard' : '/auth/login';
+    const accountLabel = isLoggedIn ? 'Account' : 'Login';
+
     return (
         <header className={`sticky top-0 z-50 flex h-20 items-center justify-between border-b border-hairline bg-canvas px-6 md:px-12 shrink-0 transition-transform duration-500 ease-out ${isHidden ? '-translate-y-full' : 'translate-y-0'}`}>
             <div className="flex items-center gap-3">
-                {/* LOGO */}
                 <Link href="/" className="flex items-center">
                     <img 
                         src="/images/logo-black.png" 
@@ -170,14 +242,16 @@ export default function NoCapHeader() {
                         trigger={
                             <button type="button" className="group flex h-12 w-12 items-center justify-center rounded-full text-ink transition-all duration-300 relative">
                                 <ShoppingCart className="h-6 w-6 transition-all duration-300 group-hover:fill-current group-hover:scale-110" strokeWidth={1.25} />
-                                <span className="absolute top-2 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-ink text-[10px] font-bold text-canvas transition-colors duration-300 group-hover:bg-canvas group-hover:text-ink">
-                                    2
-                                </span>
+                                {cartCount > 0 && (
+                                    <span className="absolute top-2 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-ink text-[10px] font-bold text-canvas transition-colors duration-300 group-hover:bg-canvas group-hover:text-ink">
+                                        {cartCount}
+                                    </span>
+                                )}
                             </button>
                         }
                     />
                     <Link 
-                        href={auth.user ? "/dashboard" : "/auth/login"} 
+                        href={accountHref} 
                         className="group flex h-12 w-12 items-center justify-center rounded-full text-ink transition-all duration-300"
                     >
                         <User className="h-6 w-6 transition-all duration-300 group-hover:fill-current group-hover:scale-110" strokeWidth={1.25} />
@@ -190,9 +264,11 @@ export default function NoCapHeader() {
                         trigger={
                             <button type="button" className="group flex h-10 w-10 items-center justify-center rounded-full text-ink transition-all duration-300 relative">
                                 <ShoppingCart className="h-6 w-6 transition-all duration-300 group-hover:fill-current group-hover:scale-110" strokeWidth={1.25} />
-                                <span className="absolute top-1 right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-ink text-[8px] font-bold text-canvas transition-colors duration-300 group-hover:bg-canvas group-hover:text-ink">
-                                    2
-                                </span>
+                                {cartCount > 0 && (
+                                    <span className="absolute top-1 right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-ink text-[8px] font-bold text-canvas transition-colors duration-300 group-hover:bg-canvas group-hover:text-ink">
+                                        {cartCount}
+                                    </span>
+                                )}
                             </button>
                         }
                     />
@@ -243,30 +319,14 @@ export default function NoCapHeader() {
                                             <span className="hidden dark:block">Light Mode</span>
                                         </span>
                                     </button>
-                                    <CartSheet
-                                        trigger={
-                                            <button
-                                                type="button"
-                                                className="flex items-center justify-between transition-colors hover:text-mute"
-                                            >
-                                                <span className="flex items-center gap-3">
-                                                    <ShoppingCart className="h-5 w-5" strokeWidth={1.25} />
-                                                    <span>Cart</span>
-                                                </span>
-                                                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1 text-[10px] font-bold text-canvas">
-                                                    2
-                                                </span>
-                                            </button>
-                                        }
-                                    />
                                     <Link
-                                        href={auth.user ? '/dashboard' : '/auth/login'}
+                                        href={accountHref}
                                         onClick={() => setIsMenuOpen(false)}
                                         className="flex items-center justify-between transition-colors hover:text-mute"
                                     >
                                         <span className="flex items-center gap-3">
                                             <User className="h-5 w-5" strokeWidth={1.25} />
-                                            <span>{auth.user ? 'Account' : 'Login'}</span>
+                                            <span>{accountLabel}</span>
                                         </span>
                                     </Link>
                                 </div>

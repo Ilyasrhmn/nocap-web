@@ -1,9 +1,16 @@
 import { Head, Link } from '@inertiajs/react';
 import { MapPin } from 'lucide-react';
+import { useEffect } from 'react';
 import NoCapLayout from '@/layouts/nocap-layout';
 import AccountSidebar from '@/components/account-sidebar';
+import { getSession } from '@/lib/storage';
 
 export default function Addresses() {
+    useEffect(() => {
+        if (typeof window !== 'undefined' && !getSession()) {
+            window.location.href = '/auth/login';
+        }
+    }, []);
     return (
         <NoCapLayout title="ADDRESSES">
             <div className="flex flex-col md:flex-row px-6 py-8 md:px-12 md:py-12 gap-12 w-full">

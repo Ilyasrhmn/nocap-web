@@ -1,19 +1,50 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import { login } from '@/routes';
-import { store } from '@/routes/register';
+import { Head, Link } from '@inertiajs/react';
+import { useState } from 'react';
+import { registerUser } from '@/lib/storage';
+import { useToast } from '@/components/toast-provider';
 
-type Props = {
-    passwordRules: string;
-};
+export default function Register() {
+    const { showToast } = useToast();
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+    const [processing, setProcessing] = useState(false);
 
-export default function Register({ passwordRules }: Props) {
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+
+        if (password !== confirmPassword) {
+            setError('PASSWORDS DO NOT MATCH');
+            showToast('PASSWORDS DO NOT MATCH', 'error');
+            return;
+        }
+
+        if (password.length < 6) {
+            setError('PASSWORD MUST BE AT LEAST 6 CHARACTERS');
+            showToast('PASSWORD TOO SHORT', 'error');
+            return;
+        }
+
+        setProcessing(true);
+        const result = registerUser(name, email, password);
+
+        if (result.success) {
+            showToast('ACCOUNT CREATED — WELCOME', 'success');
+            setTimeout(() => {
+                if (typeof window !== 'undefined') {
+                    window.location.href = '/dashboard';
+                }
+            }, 500);
+        } else {
+            setError(result.error || 'REGISTRATION FAILED');
+            showToast(result.error || 'REGISTRATION FAILED', 'error');
+            setProcessing(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-soft-cloud flex flex-col items-center justify-center p-6 font-sans">
             <Head title="Register" />
@@ -29,105 +60,87 @@ export default function Register({ passwordRules }: Props) {
                     </h2>
                 </div>
 
-                <Form
-                    {...store.form()}
-                    resetOnSuccess={['password', 'password_confirmation']}
-                    disableWhileProcessing
-                    className="flex flex-col gap-6 w-full"
-                >
-                    {({ processing, errors }) => (
-                        <>
-                            <div className="grid gap-6 w-full">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="name" className="text-[12px] font-bold uppercase tracking-widest text-ink">Name</Label>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        required
-                                        autoFocus
-                                        tabIndex={1}
-                                        autoComplete="name"
-                                        name="name"
-                                        placeholder="FULL NAME"
-                                        className="h-12 px-4 bg-transparent text-ink placeholder:text-mute placeholder:uppercase border border-hairline focus:border-ink focus:ring-0 rounded-none transition-colors"
-                                    />
-                                    <InputError message={errors.name} />
-                                </div>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
+                    <div className="grid gap-6 w-full">
+                        <div className="grid gap-2">
+                            <label htmlFor="name" className="text-[12px] font-bold uppercase tracking-widest text-ink">Name</label>
+                            <input
+                                id="name"
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                autoFocus
+                                autoComplete="name"
+                                placeholder="FULL NAME"
+                                className="h-12 px-4 bg-transparent text-ink placeholder:text-mute placeholder:uppercase border border-hairline focus:border-ink focus:ring-0 focus:outline-none rounded-none transition-colors w-full"
+                            />
+                        </div>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email" className="text-[12px] font-bold uppercase tracking-widest text-ink">Email address</Label>
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        required
-                                        tabIndex={2}
-                                        autoComplete="email"
-                                        name="email"
-                                        placeholder="EMAIL@EXAMPLE.COM"
-                                        className="h-12 px-4 bg-transparent text-ink placeholder:text-mute placeholder:uppercase border border-hairline focus:border-ink focus:ring-0 rounded-none transition-colors"
-                                    />
-                                    <InputError message={errors.email} />
-                                </div>
+                        <div className="grid gap-2">
+                            <label htmlFor="email" className="text-[12px] font-bold uppercase tracking-widest text-ink">Email address</label>
+                            <input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                autoComplete="email"
+                                placeholder="EMAIL@EXAMPLE.COM"
+                                className="h-12 px-4 bg-transparent text-ink placeholder:text-mute placeholder:uppercase border border-hairline focus:border-ink focus:ring-0 focus:outline-none rounded-none transition-colors w-full"
+                            />
+                        </div>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="password" className="text-[12px] font-bold uppercase tracking-widest text-ink">Password</Label>
-                                    <PasswordInput
-                                        id="password"
-                                        required
-                                        tabIndex={3}
-                                        autoComplete="new-password"
-                                        name="password"
-                                        placeholder="ENTER PASSWORD"
-                                        passwordrules={passwordRules}
-                                        className="h-12 px-4 bg-transparent text-ink placeholder:text-mute placeholder:uppercase border border-hairline focus:border-ink focus:ring-0 rounded-none transition-colors"
-                                    />
-                                    <InputError message={errors.password} />
-                                </div>
+                        <div className="grid gap-2">
+                            <label htmlFor="password" className="text-[12px] font-bold uppercase tracking-widest text-ink">Password</label>
+                            <input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                autoComplete="new-password"
+                                placeholder="ENTER PASSWORD"
+                                className="h-12 px-4 bg-transparent text-ink placeholder:text-mute placeholder:uppercase border border-hairline focus:border-ink focus:ring-0 focus:outline-none rounded-none transition-colors w-full"
+                            />
+                        </div>
 
-                                <div className="grid gap-2">
-                                    <Label htmlFor="password_confirmation" className="text-[12px] font-bold uppercase tracking-widest text-ink">
-                                        Confirm password
-                                    </Label>
-                                    <PasswordInput
-                                        id="password_confirmation"
-                                        required
-                                        tabIndex={4}
-                                        autoComplete="new-password"
-                                        name="password_confirmation"
-                                        placeholder="CONFIRM PASSWORD"
-                                        passwordrules={passwordRules}
-                                        className="h-12 px-4 bg-transparent text-ink placeholder:text-mute placeholder:uppercase border border-hairline focus:border-ink focus:ring-0 rounded-none transition-colors"
-                                    />
-                                    <InputError message={errors.password_confirmation} />
-                                </div>
+                        <div className="grid gap-2">
+                            <label htmlFor="password_confirmation" className="text-[12px] font-bold uppercase tracking-widest text-ink">
+                                Confirm password
+                            </label>
+                            <input
+                                id="password_confirmation"
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                                autoComplete="new-password"
+                                placeholder="CONFIRM PASSWORD"
+                                className="h-12 px-4 bg-transparent text-ink placeholder:text-mute placeholder:uppercase border border-hairline focus:border-ink focus:ring-0 focus:outline-none rounded-none transition-colors w-full"
+                            />
+                            {error && (
+                                <p className="text-[12px] font-bold uppercase tracking-widest text-sale mt-1">{error}</p>
+                            )}
+                        </div>
 
-                                <Button
-                                    type="submit"
-                                    className="mt-6 w-full bg-ink text-canvas hover:bg-ink/80 font-bold uppercase tracking-widest rounded-none h-12 transition-transform hover:scale-[0.98]"
-                                    tabIndex={5}
-                                    data-test="register-user-button"
-                                    disabled={processing}
-                                >
-                                    {processing && <Spinner className="mr-2" />}
-                                    Join The Movement
-                                </Button>
-                            </div>
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="mt-6 w-full bg-ink text-canvas hover:bg-ink/80 font-bold uppercase tracking-widest rounded-none h-12 transition-transform hover:scale-[0.98] disabled:opacity-50"
+                        >
+                            {processing ? 'CREATING...' : 'JOIN THE MOVEMENT'}
+                        </button>
+                    </div>
 
-                            <div className="text-center text-[12px] font-bold uppercase tracking-widest text-mute mt-6 pt-6 border-t border-hairline">
-                                Already have an account?{' '}
-                                <TextLink href={login()} tabIndex={6} className="text-ink hover:underline underline-offset-4 ml-1">
-                                    Log In
-                                </TextLink>
-                            </div>
-                        </>
-                    )}
-                </Form>
+                    <div className="text-center text-[12px] font-bold uppercase tracking-widest text-mute mt-6 pt-6 border-t border-hairline">
+                        Already have an account?{' '}
+                        <Link href="/auth/login" className="text-ink hover:underline underline-offset-4 ml-1">
+                            Log In
+                        </Link>
+                    </div>
+                </form>
             </div>
         </div>
     );
 }
-
-Register.layout = {
-    title: 'CREATE ACCOUNT',
-    description: 'JOIN THE MOVEMENT',
-};

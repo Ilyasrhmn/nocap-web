@@ -1,7 +1,11 @@
 import { Link } from '@inertiajs/react';
 import { User, Package, Heart, MapPin, CreditCard, Settings, LogOut } from 'lucide-react';
+import { logoutUser } from '@/lib/storage';
+import { useToast } from '@/components/toast-provider';
 
 export default function AccountSidebar({ activeMenu = 'profile' }: { activeMenu?: string }) {
+    const { showToast } = useToast();
+
     const menus = [
         { name: 'Profile', href: '/dashboard', icon: User, id: 'profile' },
         { name: 'Orders', href: '/orders', icon: Package, id: 'orders' },
@@ -9,6 +13,16 @@ export default function AccountSidebar({ activeMenu = 'profile' }: { activeMenu?
         { name: 'Addresses', href: '/addresses', icon: MapPin, id: 'addresses' },
         { name: 'Payment', href: '/payment', icon: CreditCard, id: 'payment' },
     ];
+
+    const handleLogout = () => {
+        logoutUser();
+        showToast('SIGNED OUT SUCCESSFULLY', 'success');
+        setTimeout(() => {
+            if (typeof window !== 'undefined') {
+                window.location.href = '/';
+            }
+        }, 500);
+    };
 
     return (
         <aside className="w-full md:w-[240px] shrink-0">
@@ -45,14 +59,12 @@ export default function AccountSidebar({ activeMenu = 'profile' }: { activeMenu?
                     <Settings className="w-5 h-5" /> Settings
                 </Link>
 
-                <Link
-                    href="/logout"
-                    method="post"
-                    as="button"
+                <button
+                    onClick={handleLogout}
                     className="flex items-center w-full text-left gap-3 py-3 px-4 hover:bg-soft-cloud font-medium uppercase tracking-wider text-[14px] text-sale hover:text-sale-deep transition-colors rounded-none"
                 >
                     <LogOut className="w-5 h-5" /> Sign Out
-                </Link>
+                </button>
             </nav>
         </aside>
     );

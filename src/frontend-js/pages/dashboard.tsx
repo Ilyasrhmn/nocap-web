@@ -1,11 +1,59 @@
-import { Head, Link, usePage } from '@inertiajs/react';
-import { Package, Heart, User, MapPin, CreditCard, LogOut } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { Package, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import NoCapLayout from '@/layouts/nocap-layout';
-
 import AccountSidebar from '@/components/account-sidebar';
+import { getCurrentUser, getSession, getGrails, removeFromGrails, EVENTS } from '@/lib/storage';
+import { useToast } from '@/components/toast-provider';
+import ConfirmationModal from '@/components/confirmation-modal';
 
 export default function Dashboard() {
-    const { auth } = usePage().props;
+    const { showToast } = useToast();
+    const [user, setUser] = useState(getCurrentUser());
+    const [grails, setGrails] = useState(getGrails());
+
+    // ── Route Protection ────────────────────────────
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            if (!getSession()) {
+                window.location.href = '/auth/login';
+            }
+        }
+    }, []);
+
+    // ── Listen for auth changes ─────────────────────
+    useEffect(() => {
+        const handleAuthUpdate = () => setUser(getCurrentUser());
+        if (typeof window !== 'undefined') {
+            window.addEventListener(EVENTS.AUTH_UPDATED, handleAuthUpdate);
+            return () => window.removeEventListener(EVENTS.AUTH_UPDATED, handleAuthUpdate);
+        }
+    }, []);
+
+    // ── Listen for grails changes ───────────────────
+    useEffect(() => {
+        const handleGrailsUpdate = () => setGrails(getGrails());
+        if (typeof window !== 'undefined') {
+            window.addEventListener(EVENTS.GRAILS_UPDATED, handleGrailsUpdate);
+            return () => window.removeEventListener(EVENTS.GRAILS_UPDATED, handleGrailsUpdate);
+        }
+    }, []);
+
+    const [itemToDelete, setItemToDelete] = useState<number | string | null>(null);
+
+    const handleRemoveGrailClick = (id: number | string) => {
+        setItemToDelete(id);
+    };
+
+    const confirmRemoveGrail = () => {
+        if (itemToDelete !== null) {
+            removeFromGrails(itemToDelete);
+            showToast('REMOVED FROM GRAILS', 'success');
+            setItemToDelete(null);
+        }
+    };
+
+    if (!user) return null; // guard: wait for redirect
 
     return (
         <NoCapLayout title="ACCOUNT">
@@ -20,16 +68,16 @@ export default function Dashboard() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col">
                                 <span className="text-[12px] font-medium text-mute uppercase tracking-widest mb-1">Name</span>
-                                <span className="text-[16px] font-medium text-ink">{auth.user?.name}</span>
+                                <span className="text-[16px] font-medium text-ink">{user.name}</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-[12px] font-medium text-mute uppercase tracking-widest mb-1">Email</span>
-                                <span className="text-[16px] font-medium text-ink">{auth.user?.email}</span>
+                                <span className="text-[16px] font-medium text-ink">{user.email}</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-[12px] font-medium text-mute uppercase tracking-widest mb-1">Member Since</span>
                                 <span className="text-[16px] font-medium text-ink">
-                                    {new Date(auth.user?.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                    {new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                                 </span>
                             </div>
                         </div>
@@ -40,10 +88,11 @@ export default function Dashboard() {
                         </div>
                     </section>
 
+                    {/* RECENT ORDERS */}
                     <section className="flex flex-col">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-[20px] font-medium uppercase leading-tight text-ink">Recent Orders</h2>
-                            <Link href="#" className="text-[14px] font-medium text-mute underline hover:text-ink uppercase tracking-widest">View All</Link>
+                            <Link href="/orders" className="text-[14px] font-medium text-mute underline hover:text-ink uppercase tracking-widest">View All</Link>
                         </div>
                         <div className="flex flex-col items-center justify-center py-16 bg-soft-cloud border border-hairline rounded-none">
                             <Package className="w-12 h-12 text-mute mb-4" />
@@ -53,6 +102,45 @@ export default function Dashboard() {
                                 Start Shopping
                             </Link>
                         </div>
+                    </section>
+
+                    {/* MY GRAILS */}
+                    <section className="flex flex-col">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-[20px] font-medium uppercase leading-tight text-ink">My Grails</h2>
+                            <Link href="/favorites" className="text-[14px] font-medium text-mute underline hover:text-ink uppercase tracking-widest">View All</Link>
+                        </div>
+                        {grails.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-16 bg-soft-cloud border border-hairline rounded-none">
+                                <p className="text-[16px] font-medium text-ink uppercase tracking-widest">No Grails Yet</p>
+                                <p className="text-[14px] text-mute mt-2">Save your favourite items from product pages.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                {grails.slice(0, 6).map((item) => (
+                                    <div key={item.id} className="group relative flex flex-col bg-canvas border border-hairline">
+                                        <div className="relative aspect-[4/5] w-full overflow-hidden bg-soft-cloud">
+                                            <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                                            <button
+                                                onClick={() => handleRemoveGrailClick(item.id)}
+                                                className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center bg-canvas border border-hairline text-mute hover:text-sale transition-colors"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                        <div className="p-3">
+                                            <h3 className="text-[14px] font-medium text-ink uppercase">{item.name}</h3>
+                                            <p className="text-[14px] font-medium text-mute">${item.price}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <ConfirmationModal 
+                            isOpen={itemToDelete !== null}
+                            onClose={() => setItemToDelete(null)}
+                            onConfirm={confirmRemoveGrail}
+                        />
                     </section>
                 </div>
             </div>
