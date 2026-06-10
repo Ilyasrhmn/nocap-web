@@ -75,3 +75,13 @@ export const Form = ({ children, className, onSubmit, ...props }: any) => {
         </form>
     );
 };
+
+export const useHttp = () => ({
+    submit: async () => { return {}; }
+});
+
+export const setLayoutProps = () => {};
+
+export const createInertiaApp = () => {};
+
+export type InertiaLinkProps = any;
