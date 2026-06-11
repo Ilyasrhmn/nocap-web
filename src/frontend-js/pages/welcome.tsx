@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import NoCapLayout from '@/layouts/nocap-layout';
 import ScrollReveal from '@/components/scroll-reveal';
 import FlowingFaq from '@/components/flowing-faq';
+import AuthorityBanner from '@/components/AuthorityBanner';
 import { login, register } from '@/routes';
 import { t, formatPrice } from '@/lib/i18n';
 
@@ -128,6 +129,11 @@ export default function Welcome({
                             <ChevronRight className="h-6 w-6" />
                         </button>
                     </section>
+
+                    {/* AUTHORITY BANNER (AS SEEN ON) */}
+                    <ScrollReveal>
+                        <AuthorityBanner />
+                    </ScrollReveal>
 
                     {/* PRODUCT GRID - TRENDING (CAROUSEL) */}
                     <ScrollReveal>
