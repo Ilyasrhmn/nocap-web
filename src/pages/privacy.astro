@@ -1,6 +1,7 @@
 ---
 import Privacy from '@/pages/privacy';
 import '@/../frontend-css/app.css';
+import Analytics from '../components/Analytics.astro';
 ---
 
 <html lang="en">
@@ -10,6 +11,7 @@ import '@/../frontend-css/app.css';
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Privacy Policy | NO CAP</title>
+		<Analytics />
 	</head>
 	<body class="antialiased">
 		<Privacy client:load />

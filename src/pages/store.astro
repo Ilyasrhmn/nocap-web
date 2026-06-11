@@ -1,6 +1,7 @@
 ---
 import Store from '@/pages/store';
 import '@/../frontend-css/app.css';
+import Analytics from '../components/Analytics.astro';
 ---
 
 <html lang="en">
@@ -10,6 +11,7 @@ import '@/../frontend-css/app.css';
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>NO CAP</title>
+		<Analytics />
 	</head>
 	<body class="antialiased">
 		<Store client:load />
