@@ -3,19 +3,19 @@ import LogoLoop from './LogoLoop';
 
 const magazineLogos = [
     {
-        node: <span className="font-black text-[32px] tracking-tighter uppercase text-ink/70 hover:text-ink transition-colors">HYPEBEAST</span>,
+        node: <span className="font-black text-[32px] tracking-tighter uppercase text-ink/70 hover:text-ink transition-colors cursor-default">HYPEBEAST</span>,
         title: "HYPEBEAST"
     },
     {
-        node: <span className="font-bold text-[28px] tracking-widest uppercase text-ink/70 hover:text-ink transition-colors">HIGHSNOBIETY</span>,
+        node: <span className="font-bold text-[28px] tracking-widest uppercase text-ink/70 hover:text-ink transition-colors cursor-default">HIGHSNOBIETY</span>,
         title: "HIGHSNOBIETY"
     },
     {
-        node: <span className="font-serif italic font-bold text-[36px] tracking-tight uppercase text-ink/70 hover:text-ink transition-colors">VOGUE</span>,
+        node: <span className="font-serif italic font-bold text-[36px] tracking-tight uppercase text-ink/70 hover:text-ink transition-colors cursor-default">VOGUE</span>,
         title: "VOGUE"
     },
     {
-        node: <span className="font-sans font-black text-[32px] tracking-[-0.05em] uppercase text-ink/70 hover:text-ink transition-colors">COMPLEX</span>,
+        node: <span className="font-sans font-black text-[32px] tracking-[-0.05em] uppercase text-ink/70 hover:text-ink transition-colors cursor-default">COMPLEX</span>,
         title: "COMPLEX"
     },
     {
@@ -37,7 +37,7 @@ export default function AuthorityBanner() {
                 </span>
             </div>
             
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 overflow-hidden flex items-center">
                 <LogoLoop
                     logos={magazineLogos}
                     speed={40}
@@ -45,8 +45,7 @@ export default function AuthorityBanner() {
                     logoHeight={50}
                     gap={80}
                     hoverSpeed={10}
-                    fadeOut={true}
-                    fadeOutColor="#FAF9F6" /* Matching NOCAP canvas color approximately */
+                    fadeOut={false}
                 />
             </div>
         </section>

@@ -96,7 +96,7 @@ export default function NoCapFooter() {
             <div
                 className="w-full select-none pointer-events-none overflow-hidden px-4 md:px-12 pt-4 pb-2 md:pt-2 md:pb-4 max-w-[1440px] mx-auto"
                 aria-hidden="true"
-                style={{ fontSize: 'clamp(80px, 21vw, 420px)', lineHeight: 0.85 }}
+                style={{ fontSize: 'clamp(80px, 21vw, 300px)', lineHeight: 0.85 }}
             >
                 <div className="flex justify-between items-baseline w-full font-sans font-black uppercase text-ink transform scale-y-[1.25] md:scale-y-100 origin-bottom">
                     {'NOCAP'.split('').map((letter, i) => (
